@@ -4,7 +4,7 @@
 **Vision:** A lightweight, web-based D&D combat tracker focusing on action economy management and initiative tracking, with real-time multiplayer sync and no login requirements.
 
 **Core Philosophy:** 
-- Encourage physical dice rolls (don't replace them)
+- Encourage physical dice rolls (don't replace them, but give them the option)
 - Minimal setup overhead
 - Ephemeral sessions (no persistent data storage needed)
 - Action economy clarity above all else
@@ -14,13 +14,11 @@
 ## Technical Architecture
 
 ### Tech Stack Decisions
-- [ ] **Frontend:** Next.js 14+ with React
-- [ ] **Real-time Sync:** Choose between:
-  - [ ] Supabase (Database + Realtime + Auth ready)
-  - [ ] Socket.IO + Redis for session state
-- [ ] **UI Framework:** Tailwind CSS + shadcn/ui or Mantine
-- [ ] **State Management:** React Context + useReducer (avoid Redux for MVP)
-- [ ] **Deployment:** Vercel (seamless Next.js integration)
+- [X] **Frontend:** Next.js 15+ with React
+- [X] **Real-time Sync:** Supabase Realtime (database-driven real-time updates)
+- [X] **UI Framework:** Tailwind CSS + shadcn
+- [X] **State Management:** React Context + useReducer (avoid Redux for MVP)
+- [X] **Deployment:** Vercel (seamless Next.js integration)
 
 ### Project Structure Setup
 ```
@@ -32,17 +30,17 @@ src/
 │   └── api/
 ├── components/
 │   ├── ui/ (base components)
-│   ├── CombatantCard.tsx
-│   ├── InitiativeTracker.tsx
-│   ├── ControlsBar.tsx
-│   └── AddCombatantForm.tsx
+│   ├── combatant-card.tsx
+│   ├── initiative-tracker.tsx
+│   ├── controls-bar.tsx
+│   └── add-combatant-form.tsx
 ├── lib/
 │   ├── session.ts
-│   ├── realtime.ts
+│   ├── supabase.ts
 │   └── types.ts
 └── hooks/
-    ├── useSession.ts
-    └── useRealtime.ts
+    ├── use-session.ts
+    └── use-realtime.ts
 ```
 
 ---
@@ -50,37 +48,37 @@ src/
 ## MVP Features (v1.0) - Priority Order
 
 ### 🚀 Phase 1: Core Session Management
-- [ ] **Session Creation** 
-  - [ ] Generate unique 6-character session codes
-  - [ ] Create session API endpoint
-  - [ ] DM access token generation
-  - [ ] Session expiration logic (24h auto-cleanup)
+- [X] **Session Creation** 
+  - [X] Generate unique 6-character session codes
+  - [X] Create session API endpoint
+  - [X] DM access token generation
+  - [X] Session expiration logic (24h auto-cleanup)
 
-- [ ] **Session Joining**
-  - [ ] Join via session code input
-  - [ ] Join via direct link sharing
-  - [ ] Role assignment (DM vs Player)
-  - [ ] No login/signup required
+- [X] **Session Joining**
+  - [X] Join via session code input
+  - [X] Join via direct link sharing
+  - [X] Role assignment (DM vs Player)
+  - [X] No login/signup required
 
-- [ ] **Basic UI Setup**
-  - [ ] Landing page with "Create Session" button
-  - [ ] Join session page
-  - [ ] Session not found error handling
-  - [ ] Mobile-responsive base layout
+- [X] **Basic UI Setup**
+  - [X] Landing page with "Create Session" button
+  - [X] Join session page
+  - [X] Session not found error handling
+  - [X] Mobile-responsive base layout
 
 ### 🚀 Phase 2: Real-Time Infrastructure
-- [ ] **Real-Time Communication**
-  - [ ] Set up WebSocket connection
-  - [ ] Session room/channel management
-  - [ ] Event broadcasting system
+- [ ] **Supabase Realtime Integration**
+  - [ ] Subscribe to session table changes
+  - [ ] Subscribe to combatant table changes  
+  - [ ] Real-time session state synchronization
   - [ ] Connection state management
-  - [ ] Reconnection handling
+  - [ ] Automatic reconnection handling
 
 - [ ] **State Synchronization**
-  - [ ] Session state schema design
-  - [ ] Real-time state updates
-  - [ ] Conflict resolution (DM has priority)
-  - [ ] Client-side state caching
+  - [ ] Real-time combatant updates across all clients
+  - [ ] Session updates (round, turn) broadcast to all participants
+  - [ ] Conflict resolution (DM actions take priority)
+  - [ ] Optimistic updates with rollback capability
 
 ### 🚀 Phase 3: Combat Tracker Core
 - [ ] **Initiative Management**
