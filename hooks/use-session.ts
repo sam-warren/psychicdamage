@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Session, Combatant, SessionState, UserRole } from '@/lib/types';
 import { 
   createSession, 
@@ -46,23 +46,34 @@ export function useSession(): UseSessionReturn {
     error: null,
   });
 
-  const [dmToken, setDMTokenState] = useState<string | null>(null);
-  const [playerToken, setPlayerTokenState] = useState<string | null>(null);
-  const [userRole, setUserRoleState] = useState<UserRole | null>(null);
-
-  // Initialize tokens and role from localStorage on mount
-  useEffect(() => {
-    const storedDMToken = localStorage.getItem('dm_token');
-    const storedPlayerToken = localStorage.getItem('player_token');
-    
-    if (storedDMToken) {
-      setDMTokenState(storedDMToken);
-      setUserRoleState('dm');
-    } else if (storedPlayerToken) {
-      setPlayerTokenState(storedPlayerToken);
-      setUserRoleState('player');
+  // Initialize tokens and role from localStorage immediately (not in useEffect)
+  const [dmToken, setDMTokenState] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('dm_token');
     }
-  }, []);
+    return null;
+  });
+  
+  const [playerToken, setPlayerTokenState] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('player_token');
+    }
+    return null;
+  });
+  
+  const [userRole, setUserRoleState] = useState<UserRole | null>(() => {
+    if (typeof window !== 'undefined') {
+      const storedDMToken = localStorage.getItem('dm_token');
+      const storedPlayerToken = localStorage.getItem('player_token');
+      
+      if (storedDMToken) {
+        return 'dm';
+      } else if (storedPlayerToken) {
+        return 'player';
+      }
+    }
+    return null;
+  });
 
   const setError = useCallback((error: string | null) => {
     setSessionState(prev => ({ ...prev, error }));
@@ -97,7 +108,10 @@ export function useSession(): UseSessionReturn {
     setPlayerTokenState(token);
     if (token) {
       localStorage.setItem('player_token', token);
-      setUserRoleState('player');
+      // Only set role to 'player' if user isn't already a DM
+      if (userRole !== 'dm') {
+        setUserRoleState('player');
+      }
     } else {
       localStorage.removeItem('player_token');
       if (userRole === 'player') {
