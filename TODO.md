@@ -17,10 +17,10 @@
 - [X] Register domain name for production
 
 ### Legal & Compliance Preparation
-- [ ] Download D&D 5e SRD 5.1 content and review licensing
-- [ ] Draft terms of service and privacy policy
-- [ ] Create WotC Fan Content Policy compliance checklist
-- [ ] Prepare attribution statements for SRD content
+- [X] Download D&D 5e SRD 5.1 content and review licensing
+- [X] Draft terms of service and privacy policy
+- [X] Create WotC Fan Content Policy compliance checklist
+- [X] Prepare attribution statements for SRD content
 
 ---
 
