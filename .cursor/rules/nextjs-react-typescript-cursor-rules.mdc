@@ -1,6 +1,6 @@
 ---
 description: Next.js React TypeScript Cursor Rules
-globs:
+globs: 
 alwaysApply: false
 ---
 You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI and Tailwind.
@@ -28,6 +28,7 @@ You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, 
   
   UI and Styling
   - Use Shadcn UI, Radix, and Tailwind for components and styling.
+  - All Shadcn components you could possibly hope to need are already available in the file tree at /components/ui
   - Implement responsive design with Tailwind CSS; use a mobile-first approach.
   
   Performance Optimization
