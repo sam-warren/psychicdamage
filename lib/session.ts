@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 import { Session, Combatant } from './types';
 
 /**
- * Generate a unique 6-character session code
+ * Generate a random 6-character session code
  */
 export function generateSessionCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -18,6 +18,17 @@ export function generateSessionCode(): string {
  */
 export function generateToken(): string {
   return crypto.randomUUID();
+}
+
+/**
+ * Clear all session tokens from localStorage
+ * Useful when switching between creating and joining sessions
+ */
+export function clearAllSessionTokens(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('dm_token');
+    localStorage.removeItem('player_token');
+  }
 }
 
 /**
@@ -87,6 +98,21 @@ export async function joinSession(code: string): Promise<Session> {
   }
 
   return data;
+}
+
+/**
+ * Verify DM token for a session by session code
+ */
+export async function verifyDMTokenByCode(sessionCode: string, token: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('dm_token')
+    .eq('code', sessionCode.toUpperCase())
+    .eq('is_active', true)
+    .single();
+
+  if (error) return false;
+  return data.dm_token === token;
 }
 
 /**

@@ -6,13 +6,16 @@ import {
   endSession, 
   getCombatants,
   addCombatant,
-  removeCombatant
+  removeCombatant,
+  verifyDMTokenByCode
 } from '@/lib/session';
 
 interface UseSessionReturn {
   sessionState: SessionState;
   createNewSession: () => Promise<{ session: Session; dmToken: string }>;
   joinExistingSession: (code: string) => Promise<Session>;
+  loadSessionData: (code: string) => Promise<Session>;
+  verifyDMTokenForSession: (sessionCode: string) => Promise<boolean>;
   endCurrentSession: () => Promise<void>;
   addCombatantToSession: (combatantData: {
     name: string;
@@ -46,7 +49,7 @@ export function useSession(): UseSessionReturn {
     error: null,
   });
 
-  // Initialize tokens and role from localStorage immediately (not in useEffect)
+  // Initialize tokens from localStorage (simplified - only one token type at a time)
   const [dmToken, setDMTokenState] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dm_token');
@@ -60,15 +63,13 @@ export function useSession(): UseSessionReturn {
     }
     return null;
   });
-  
+
+  // Role is determined by which token exists (simplified)
   const [userRole, setUserRoleState] = useState<UserRole | null>(() => {
     if (typeof window !== 'undefined') {
-      const storedDMToken = localStorage.getItem('dm_token');
-      const storedPlayerToken = localStorage.getItem('player_token');
-      
-      if (storedDMToken) {
+      if (localStorage.getItem('dm_token')) {
         return 'dm';
-      } else if (storedPlayerToken) {
+      } else if (localStorage.getItem('player_token')) {
         return 'player';
       }
     }
@@ -91,37 +92,77 @@ export function useSession(): UseSessionReturn {
     setSessionState(prev => ({ ...prev, session }));
   }, []);
 
+  // Simplified token setters - clear the other token when setting one
   const setDMToken = useCallback((token: string | null) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('setDMToken called with:', token);
+    }
+    
     setDMTokenState(token);
     if (token) {
+      // Clear player token and set as DM
       localStorage.setItem('dm_token', token);
+      localStorage.removeItem('player_token');
+      setPlayerTokenState(null);
       setUserRoleState('dm');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('DM token set, player token cleared, role set to dm');
+      }
     } else {
       localStorage.removeItem('dm_token');
-      if (userRole === 'dm') {
-        setUserRoleState(null);
+      setUserRoleState(null);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('DM token cleared, role set to null');
       }
     }
-  }, [userRole]);
+  }, []);
 
   const setPlayerToken = useCallback((token: string | null) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('setPlayerToken called with:', token);
+    }
+    
     setPlayerTokenState(token);
     if (token) {
+      // Clear DM token and set as player
       localStorage.setItem('player_token', token);
-      // Only set role to 'player' if user isn't already a DM
-      if (userRole !== 'dm') {
-        setUserRoleState('player');
+      localStorage.removeItem('dm_token');
+      setDMTokenState(null);
+      setUserRoleState('player');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Player token set, DM token cleared, role set to player');
       }
     } else {
       localStorage.removeItem('player_token');
-      if (userRole === 'player') {
-        setUserRoleState(null);
+      setUserRoleState(null);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Player token cleared, role set to null');
       }
     }
-  }, [userRole]);
+  }, []);
 
   const setUserRole = useCallback((role: UserRole | null) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('setUserRole called with:', role);
+    }
     setUserRoleState(role);
+  }, []);
+
+  // Clear all tokens and role
+  const clearAllTokens = useCallback(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('clearAllTokens called - clearing all tokens and role');
+    }
+    
+    localStorage.removeItem('dm_token');
+    localStorage.removeItem('player_token');
+    setDMTokenState(null);
+    setPlayerTokenState(null);
+    setUserRoleState(null);
   }, []);
 
   const createNewSession = useCallback(async (): Promise<{ session: Session; dmToken: string }> => {
@@ -129,9 +170,20 @@ export function useSession(): UseSessionReturn {
     setError(null);
 
     try {
+      // Clear all existing tokens first to ensure clean state
+      clearAllTokens();
+      
       const result = await createSession();
       setSession(result.session);
+      
+      // Creating a session makes you the DM - set DM token explicitly
       setDMToken(result.dmToken);
+      
+      // Debug log to verify token setting
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Session created - setting DM token:', result.dmToken);
+      }
+      
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create session';
@@ -140,9 +192,9 @@ export function useSession(): UseSessionReturn {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setError, setSession, setDMToken]);
+  }, [setLoading, setError, setSession, setDMToken, clearAllTokens]);
 
-  const joinExistingSession = useCallback(async (code: string): Promise<Session> => {
+  const loadSessionData = useCallback(async (code: string): Promise<Session> => {
     setLoading(true);
     setError(null);
 
@@ -150,11 +202,39 @@ export function useSession(): UseSessionReturn {
       const session = await joinSession(code);
       setSession(session);
       
-      // Only generate player token if user doesn't already have DM token
-      // (handles case where DM navigates to their own session)
-      if (!dmToken) {
-        const playerToken = crypto.randomUUID();
-        setPlayerToken(playerToken);
+      // Don't change tokens - just load the session data
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Session data loaded without changing tokens');
+      }
+      
+      return session;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load session';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, setSession]);
+
+  const joinExistingSession = useCallback(async (code: string): Promise<Session> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Clear all existing tokens first to ensure clean state
+      clearAllTokens();
+      
+      const session = await joinSession(code);
+      setSession(session);
+      
+      // Joining a session makes you a player - generate new player token
+      const newPlayerToken = crypto.randomUUID();
+      setPlayerToken(newPlayerToken);
+      
+      // Debug log to verify token setting
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Session joined - setting player token:', newPlayerToken);
       }
       
       return session;
@@ -165,7 +245,7 @@ export function useSession(): UseSessionReturn {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setError, setSession, setPlayerToken, dmToken]);
+  }, [setLoading, setError, setSession, setPlayerToken, clearAllTokens]);
 
   const endCurrentSession = useCallback(async (): Promise<void> => {
     if (!sessionState.session || !dmToken) {
@@ -178,8 +258,7 @@ export function useSession(): UseSessionReturn {
     try {
       await endSession(sessionState.session.id, dmToken);
       setSession(null);
-      setDMToken(null);
-      setUserRole(null);
+      clearAllTokens();
       setSessionState(prev => ({ ...prev, combatants: [] }));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to end session';
@@ -188,7 +267,7 @@ export function useSession(): UseSessionReturn {
     } finally {
       setLoading(false);
     }
-  }, [sessionState.session, dmToken, setLoading, setError, setSession, setDMToken, setUserRole]);
+  }, [sessionState.session, dmToken, setLoading, setError, setSession, clearAllTokens]);
 
   const loadCombatants = useCallback(async (): Promise<void> => {
     if (!sessionState.session) return;
@@ -267,10 +346,22 @@ export function useSession(): UseSessionReturn {
     }
   }, [dmToken, setLoading, setError]);
 
+  const verifyDMTokenForSession = useCallback(async (sessionCode: string): Promise<boolean> => {
+    if (!dmToken) return false;
+    
+    try {
+      return await verifyDMTokenByCode(sessionCode, dmToken);
+    } catch {
+      return false;
+    }
+  }, [dmToken]);
+
   return {
     sessionState,
     createNewSession,
     joinExistingSession,
+    loadSessionData,
+    verifyDMTokenForSession,
     endCurrentSession,
     addCombatantToSession,
     removeCombatantFromSession,

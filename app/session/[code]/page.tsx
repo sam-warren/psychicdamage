@@ -15,7 +15,9 @@ export default function SessionPage() {
   const sessionCode = params.code as string;
   const { 
     sessionState, 
-    joinExistingSession, 
+    joinExistingSession,
+    loadSessionData,
+    verifyDMTokenForSession, 
     isLoading, 
     error, 
     userRole,
@@ -27,12 +29,45 @@ export default function SessionPage() {
 
   useEffect(() => {
     if (sessionCode && !sessionState.session) {
-      joinExistingSession(sessionCode).catch(() => {
-        // Error handling is done in the hook
-        router.push('/');
-      });
+      // Check if user has a valid DM token for this specific session
+      if (dmToken) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('User has DM token, verifying for session:', sessionCode);
+        }
+        
+        verifyDMTokenForSession(sessionCode).then(isValidDM => {
+          if (isValidDM) {
+            if (process.env.NODE_ENV === 'development') {
+              console.log('DM token verified, loading session data without changing role');
+            }
+            loadSessionData(sessionCode).catch(() => {
+              router.push('/');
+            });
+          } else {
+            if (process.env.NODE_ENV === 'development') {
+              console.log('DM token invalid for this session, joining as player');
+            }
+            joinExistingSession(sessionCode).catch(() => {
+              router.push('/');
+            });
+          }
+        }).catch(() => {
+          // If verification fails, join as player
+          joinExistingSession(sessionCode).catch(() => {
+            router.push('/');
+          });
+        });
+      } else {
+        // If no DM token, join as a player
+        if (process.env.NODE_ENV === 'development') {
+          console.log('User has no DM token, joining as player');
+        }
+        joinExistingSession(sessionCode).catch(() => {
+          router.push('/');
+        });
+      }
     }
-  }, [sessionCode, sessionState.session, joinExistingSession, router]);
+  }, [sessionCode, sessionState.session, joinExistingSession, loadSessionData, verifyDMTokenForSession, dmToken, router]);
 
   const handleCopyCode = async () => {
     try {
@@ -60,29 +95,20 @@ export default function SessionPage() {
     );
   }
 
-  if (error) {
+  if (error || !sessionState.session) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <Card className="bg-slate-800/50 border-slate-700 max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle className="text-red-400">Session Error</CardTitle>
-            <CardDescription className="text-slate-300">
-              {error}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={handleBackToHome} variant="outline" className="w-full">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Session Not Found</h1>
+          <p className="text-slate-300 mb-6">
+            The session you&apos;re looking for doesn&apos;t exist or has expired.
+          </p>
+          <Button onClick={handleBackToHome} variant="outline">
+            Back to Home
+          </Button>
+        </div>
       </div>
     );
-  }
-
-  if (!sessionState.session) {
-    return null;
   }
 
   return (
@@ -206,10 +232,16 @@ export default function SessionPage() {
               <pre className="text-xs text-slate-400 overflow-auto">
                 {JSON.stringify({
                   sessionId: sessionState.session.id,
+                  sessionCode: sessionCode,
                   userRole,
                   dmToken: dmToken ? 'Present' : 'Missing',
                   playerToken: playerToken ? 'Present' : 'Missing',
-                  combatants: sessionState.combatants.length
+                  dmTokenValue: dmToken ? dmToken.substring(0, 8) + '...' : null,
+                  playerTokenValue: playerToken ? playerToken.substring(0, 8) + '...' : null,
+                  localStorageDmToken: typeof window !== 'undefined' && localStorage.getItem('dm_token') ? localStorage.getItem('dm_token')!.substring(0, 8) + '...' : 'N/A',
+                  localStoragePlayerToken: typeof window !== 'undefined' && localStorage.getItem('player_token') ? localStorage.getItem('player_token')!.substring(0, 8) + '...' : 'N/A',
+                  combatants: sessionState.combatants.length,
+                  note: dmToken ? 'DM token will be verified against session' : 'No DM token - joined as player'
                 }, null, 2)}
               </pre>
             </CardContent>
