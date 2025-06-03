@@ -27,23 +27,23 @@
 ## Phase 1: Foundation & Core Auth (Weeks 1-2)
 
 ### Project Initialization
-- [ ] Initialize Next.js project with TypeScript and Tailwind CSS
+- [X] Initialize Next.js project with TypeScript and Tailwind CSS
 - [ ] Configure next.config.js for optimizations
 - [ ] Set up TypeScript configuration (strict mode)
-- [ ] Initialize Shadcn/ui component library
+- [X] Initialize Shadcn/ui component library
 - [ ] Configure Tailwind CSS with custom design tokens
 - [ ] Set up project structure and folder organization
 
 ### Supabase Backend Setup
-- [ ] Create Supabase project (development)
+- [X] Create Supabase project (development)
 - [ ] Configure authentication settings (email/password only)
-- [ ] Set up database schema (profiles, campaigns tables)
+- [X] Set up database schema (profiles, campaigns tables)
 - [ ] Configure Row Level Security (RLS) policies
 - [ ] Create database functions and triggers
-- [ ] Set up development environment variables
+- [X] Set up development environment variables
 
 ### Authentication System
-- [ ] Install and configure Supabase client libraries
+- [X] Install and configure Supabase client libraries
 - [ ] Create authentication context and hooks
 - [ ] Build login page with form validation
 - [ ] Build signup page with email verification
@@ -54,7 +54,7 @@
 - [ ] Test all authentication flows
 
 ### UI Foundation
-- [ ] Install required Shadcn/ui components
+- [X] Install required Shadcn/ui components
 - [ ] Create consistent layout components
 - [ ] Implement responsive sidebar navigation
 - [ ] Build dark/light mode toggle
@@ -63,7 +63,7 @@
 - [ ] Add proper TypeScript types for all components
 
 ### Basic Campaign Management
-- [ ] Create campaigns table in Supabase
+- [X] Create campaigns table in Supabase
 - [ ] Build campaign creation form
 - [ ] Create campaigns list/dashboard view
 - [ ] Implement campaign editing functionality
@@ -84,7 +84,7 @@
 ## Phase 2: Player Management & Monster Database (Weeks 3-4)
 
 ### Player Character System
-- [ ] Create players table in Supabase
+- [X] Create players table in Supabase
 - [ ] Install form validation library (Zod)
 - [ ] Build player character creation form
 - [ ] Create player list component with HP tracking
@@ -94,7 +94,7 @@
 - [ ] Add player notes and character details
 
 ### SRD Monster Database
-- [ ] Source official D&D 5e SRD 5.1 monster data
+- [X] Source official D&D 5e SRD 5.1 monster data
 - [ ] Create monsters table schema
 - [ ] Parse and clean monster data for database
 - [ ] Create migration script to populate monsters
@@ -133,7 +133,7 @@
 ## Phase 3: Encounter Builder (Weeks 5-6)
 
 ### Encounter System Foundation
-- [ ] Create encounters table in Supabase
+- [X] Create encounters table in Supabase
 - [ ] Build encounter creation form
 - [ ] Create encounter list/management view
 - [ ] Implement encounter editing and deletion
@@ -184,7 +184,7 @@
 ## Phase 4: Combat Tracker (Weeks 7-9)
 
 ### Initiative System
-- [ ] Create encounter_participants table
+- [X] Create encounter_participants table
 - [ ] Build initiative input interface
 - [ ] Implement automatic initiative rolling
 - [ ] Create turn order sorting algorithm
