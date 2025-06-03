@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Psychic Damage",
-  description: "A lightning-fast D&D 5e combat tracker focused on action economy and initiative management",
+  description:
+    "Campaign Management for D&D 5e",
 };
 
 export default function RootLayout({
