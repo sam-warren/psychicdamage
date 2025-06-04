@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Plus, Users, Sword, BookOpen } from 'lucide-react'
 import Link from 'next/link'
-import { formatDistanceToNow } from 'date-fns'
 import { Campaign } from '@/types/database'
 
 export default function DashboardPage() {
@@ -64,7 +63,7 @@ export default function DashboardPage() {
           Welcome back, {user?.email?.split('@')[0] || 'Dungeon Master'}!
         </h1>
         <p className="text-muted-foreground">
-          Here's what's happening with your campaigns and adventures.
+          Here&apos;s what&apos;s happening with your campaigns and adventures.
         </p>
       </div>
 
@@ -78,7 +77,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCampaigns}</div>
             <p className="text-xs text-muted-foreground">
-              Active campaigns you're managing
+              Active campaigns you&apos;re managing
             </p>
           </CardContent>
         </Card>

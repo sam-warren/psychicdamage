@@ -238,7 +238,7 @@ export default function CampaignsPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{campaign.title}"? This action cannot be undone and will delete all associated players, encounters, and notes.
+                              Are you sure you want to delete &quot;{campaign.title}&quot;? This action cannot be undone and will delete all associated players, encounters, and notes.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
