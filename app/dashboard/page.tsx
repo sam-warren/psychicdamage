@@ -1,92 +1,52 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { supabase } from '@/lib/supabase'
-import { Campaign } from '@/types/database'
+import { campaignService } from '@/lib/campaigns'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, BookOpen, Users, Sword, Sparkles } from 'lucide-react'
+import { Plus, Users, Sword, BookOpen } from 'lucide-react'
 import Link from 'next/link'
-import { toast } from 'sonner'
+import { formatDistanceToNow } from 'date-fns'
+import { Campaign } from '@/types/database'
 
 export default function DashboardPage() {
-  const { user, profile } = useAuth()
+  const { user, loading } = useAuth()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalCampaigns: 0,
     totalPlayers: 0,
     activeCombats: 0,
   })
 
-  useEffect(() => {
-    if (user) {
-      fetchCampaigns()
-      fetchStats()
+  const fetchCampaigns = useCallback(async () => {
+    try {
+      if (!user) return
+      const userCampaigns = await campaignService.getCampaigns(user.id)
+      setCampaigns(userCampaigns)
+    } catch {
+      console.error('Failed to fetch campaigns')
     }
   }, [user])
 
-  const fetchCampaigns = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('updated_at', { ascending: false })
-        .limit(5)
-
-      if (error) {
-        toast.error('Error fetching campaigns')
-        return
-      }
-
-      setCampaigns(data || [])
-    } catch (error) {
-      toast.error('Error fetching campaigns')
-    } finally {
-      setLoading(false)
+  const fetchStats = useCallback(async () => {
+    // For now, just calculate from campaigns
+    // Later we can add actual stats queries
+    const statsData = {
+      totalCampaigns: campaigns.length,
+      totalPlayers: 0, // We'll calculate this when we add players
+      activeCombats: 0, // We'll calculate this when we add encounters
     }
-  }
+    setStats(statsData)
+  }, [campaigns])
 
-  const fetchStats = async () => {
-    try {
-      // Get total campaigns
-      const { count: campaignCount } = await supabase
-        .from('campaigns')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id)
+  useEffect(() => {
+    fetchCampaigns()
+  }, [fetchCampaigns])
 
-      // Get total players across all campaigns
-      const { count: playerCount } = await supabase
-        .from('players')
-        .select('*', { count: 'exact', head: true })
-        .in('campaign_id', 
-          campaigns.length > 0 
-            ? campaigns.map(c => c.id)
-            : [''] // Empty array if no campaigns
-        )
-
-      // Get active encounters
-      const { count: encounterCount } = await supabase
-        .from('encounters')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true)
-        .in('campaign_id', 
-          campaigns.length > 0 
-            ? campaigns.map(c => c.id)
-            : [''] // Empty array if no campaigns
-        )
-
-      setStats({
-        totalCampaigns: campaignCount || 0,
-        totalPlayers: playerCount || 0,
-        activeCombats: encounterCount || 0,
-      })
-    } catch (error) {
-      console.error('Error fetching stats:', error)
-    }
-  }
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   if (loading) {
     return (
@@ -101,7 +61,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome back, {profile?.display_name || user?.email?.split('@')[0] || 'Dungeon Master'}!
+          Welcome back, {user?.email?.split('@')[0] || 'Dungeon Master'}!
         </h1>
         <p className="text-muted-foreground">
           Here's what's happening with your campaigns and adventures.
@@ -176,7 +136,7 @@ export default function DashboardPage() {
                 </div>
                 <h3 className="font-medium mb-2">No campaigns yet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Create your first campaign to start your D&D adventure
+                  You haven&apos;t created any campaigns yet. Start by creating your first campaign to begin your D&amp;D adventure!
                 </p>
                 <Button asChild>
                   <Link href="/dashboard/campaigns">
@@ -219,7 +179,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
+              <Plus className="h-5 w-5" />
               Quick Actions
             </CardTitle>
             <CardDescription>

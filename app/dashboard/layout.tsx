@@ -22,7 +22,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, profile, loading } = useAuth()
+  const { loading } = useAuth()
 
   if (loading) {
     return (

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { campaignService, CreateCampaignData } from '@/lib/campaigns'
+import { campaignService } from '@/lib/campaigns'
 import { Campaign } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -46,23 +46,23 @@ export default function CampaignsPage() {
     resolver: zodResolver(campaignSchema),
   })
 
-  useEffect(() => {
-    if (user) {
-      fetchCampaigns()
-    }
-  }, [user])
-
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     try {
       setLoading(true)
       const data = await campaignService.getCampaigns(user!.id)
       setCampaigns(data)
-    } catch (error) {
+    } catch {
       toast.error('Error fetching campaigns')
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchCampaigns()
+    }
+  }, [user, fetchCampaigns])
 
   const onSubmit = async (data: CampaignForm) => {
     if (!user) return
@@ -88,7 +88,7 @@ export default function CampaignsPage() {
         toast.success('Campaign created successfully')
       }
       reset()
-    } catch (error) {
+    } catch {
       toast.error(editingCampaign ? 'Error updating campaign' : 'Error creating campaign')
     } finally {
       setIsSubmitting(false)
@@ -109,7 +109,7 @@ export default function CampaignsPage() {
       await campaignService.deleteCampaign(campaign.id, user.id)
       setCampaigns(campaigns.filter(c => c.id !== campaign.id))
       toast.success('Campaign deleted successfully')
-    } catch (error) {
+    } catch {
       toast.error('Error deleting campaign')
     }
   }
@@ -149,7 +149,7 @@ export default function CampaignsPage() {
             <DialogHeader>
               <DialogTitle>Create New Campaign</DialogTitle>
               <DialogDescription>
-                Create a new D&D campaign to start managing your sessions and players.
+                Create a new campaign to start your D&amp;D adventure.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

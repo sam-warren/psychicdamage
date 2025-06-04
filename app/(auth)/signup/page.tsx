@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -20,6 +18,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 
 const signupSchema = z
@@ -80,7 +80,7 @@ export default function SignupPage() {
 
       setEmailSent(true);
       toast.success("Check your email for the confirmation link!");
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -96,7 +96,7 @@ export default function SignupPage() {
               Check your email
             </CardTitle>
             <CardDescription className="text-center">
-              We've sent you a confirmation link. Please check your email and
+              We&apos;ve sent you a confirmation link. Please check your email and
               click the link to verify your account.
             </CardDescription>
           </CardHeader>

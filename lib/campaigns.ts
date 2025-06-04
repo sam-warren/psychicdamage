@@ -4,13 +4,13 @@ import { Campaign } from '@/types/database'
 export interface CreateCampaignData {
   title: string
   description?: string
-  settings?: Record<string, any>
+  settings?: Record<string, unknown>
 }
 
 export interface UpdateCampaignData {
   title?: string
   description?: string
-  settings?: Record<string, any>
+  settings?: Record<string, unknown>
 }
 
 export const campaignService = {

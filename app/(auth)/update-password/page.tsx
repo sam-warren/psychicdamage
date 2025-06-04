@@ -81,7 +81,7 @@ export default function UpdatePasswordPage() {
         toast.success('Password updated successfully!')
         setTimeout(() => router.push('/dashboard'), 2000)
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred')
     } finally {
       setIsLoading(false)
@@ -173,7 +173,7 @@ export default function UpdatePasswordPage() {
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
-              </div>
+              </div> 
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
