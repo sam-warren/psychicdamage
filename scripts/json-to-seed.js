@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 function parseChallengeRating(challengeString) {
   if (!challengeString) return { cr: 0, xp: 0 };
@@ -166,7 +167,7 @@ INSERT INTO monsters (
 }
 
 // Run the script
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
   convertJSONToSeed();
 }
 
