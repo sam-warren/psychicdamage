@@ -263,7 +263,12 @@ export default function CampaignsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4 mr-2" />
-                    Updated {formatDistanceToNow(new Date(campaign.updated_at!), { addSuffix: true })}
+                    {campaign.updated_at 
+                      ? `Updated ${formatDistanceToNow(new Date(campaign.updated_at), { addSuffix: true })}`
+                      : campaign.created_at 
+                        ? `Created ${formatDistanceToNow(new Date(campaign.created_at), { addSuffix: true })}`
+                        : 'Recently created'
+                    }
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <Button asChild variant="outline" size="sm">
