@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,27 +11,6 @@ import { Sword, Users, BookOpen, Zap, Shield, Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.push("/dashboard");
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (user) {
-    return null; // Will redirect to dashboard
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -46,10 +22,10 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-4">
             <Button asChild variant="ghost">
-              <Link href="/login">Sign In</Link>
+              <Link href="/auth/login">Sign In</Link>
             </Button>
             <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/signup">Get Started</Link>
+              <Link href="/auth/sign-up">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -74,7 +50,7 @@ export default function HomePage() {
               size="lg"
               className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
             >
-              <Link href="/signup">Start Free Trial</Link>
+              <Link href="/auth/sign-up">Start Free Trial</Link>
             </Button>
             <Button
               asChild
@@ -82,7 +58,7 @@ export default function HomePage() {
               size="lg"
               className="text-lg px-8"
             >
-              <Link href="/login">Sign In</Link>
+              <Link href="/auth/login">Sign In</Link>
             </Button>
           </div>
         </div>
@@ -174,7 +150,7 @@ export default function HomePage() {
             size="lg"
             className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
           >
-            <Link href="/signup">Get Started for Free</Link>
+            <Link href="/auth/sign-up">Get Started for Free</Link>
           </Button>
         </div>
       </section>
