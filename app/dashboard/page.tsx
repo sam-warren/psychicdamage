@@ -1,26 +1,40 @@
-import { getUser } from '@/lib/auth'
-import { campaignService } from '@/lib/campaigns'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Plus, Users, Sword, BookOpen } from 'lucide-react'
-import Link from 'next/link'
+import { getUser, getUserProfile } from "@/lib/auth";
+import { campaignService } from "@/lib/campaigns";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Users, Sword, BookOpen } from "lucide-react";
+import Link from "next/link";
 
 export default async function DashboardPage() {
-  const user = await getUser()
-  const campaigns = user ? await campaignService.getCampaigns(user.id) : []
-  
+  const user = await getUser();
+  const profile = await getUserProfile();
+  const campaigns = user ? await campaignService.getCampaigns(user.id) : [];
+
+  // Get user's display name with fallbacks
+  const userName =
+    profile?.display_name ||
+    user?.user_metadata?.display_name ||
+    user?.email?.split("@")[0] ||
+    "Dungeon Master";
+
   const stats = {
     totalCampaigns: campaigns.length,
     totalPlayers: 0, // We'll calculate this when we add players
     activeCombats: 0, // We'll calculate this when we add encounters
-  }
+  };
 
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome back, {user?.email?.split('@')[0] || 'Dungeon Master'}!
+          Welcome back, {userName}!
         </h1>
         <p className="text-muted-foreground">
           Here&apos;s what&apos;s happening with your campaigns and adventures.
@@ -31,7 +45,9 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Campaigns</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Campaigns
+            </CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -55,7 +71,9 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Combats</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Combats
+            </CardTitle>
             <Sword className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -95,7 +113,8 @@ export default async function DashboardPage() {
                 </div>
                 <h3 className="font-medium mb-2">No campaigns yet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You haven&apos;t created any campaigns yet. Start by creating your first campaign to begin your D&amp;D adventure!
+                  You haven&apos;t created any campaigns yet. Start by creating
+                  your first campaign to begin your D&amp;D adventure!
                 </p>
                 <Button asChild>
                   <Link href="/dashboard/campaigns">
@@ -114,7 +133,7 @@ export default async function DashboardPage() {
                     <div>
                       <h4 className="font-medium">{campaign.title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {campaign.description || 'No description'}
+                        {campaign.description || "No description"}
                       </p>
                     </div>
                     <Button asChild variant="ghost" size="sm">
@@ -168,5 +187,5 @@ export default async function DashboardPage() {
         </Card>
       </div>
     </div>
-  )
-} 
+  );
+}

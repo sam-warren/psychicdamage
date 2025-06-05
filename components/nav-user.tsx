@@ -7,7 +7,6 @@ import {
   Settings,
   Sparkles,
   User,
-  Loader2,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,9 +25,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/use-auth";
-import { toast } from "sonner";
-import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -40,24 +38,12 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { signOut } = useAuth();
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const router = useRouter();
 
-  const handleSignOut = async () => {
-    if (isSigningOut) return; // Prevent double-clicking
-
-    setIsSigningOut(true);
-
-    try {
-      console.log("Starting sign out process...");
-      await signOut();
-      console.log("Sign out successful, redirecting...");
-      toast.success("Signed out successfully");
-    } catch (error) {
-      console.error("Sign out error:", error);
-      toast.error("Error signing out. Please try again.");
-      setIsSigningOut(false); // Reset loading state on error
-    }
+  const logout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
   };
 
   return (
@@ -129,13 +115,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} disabled={isSigningOut}>
-              {isSigningOut ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <LogOut />
-              )}
-              {isSigningOut ? "Signing out..." : "Sign out"}
+            <DropdownMenuItem onClick={logout}>
+              <LogOut />
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
