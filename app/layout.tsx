@@ -1,7 +1,8 @@
+import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,8 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PSYCHIC_DAMAGE",
-  description:
-    "Campaign Management for D&D 5e",
+  description: "Campaign Management for D&D 5e",
 };
 
 export default function RootLayout({
@@ -37,6 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Analytics />
           <Toaster position="top-right" richColors />
         </ThemeProvider>
       </body>
