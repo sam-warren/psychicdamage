@@ -19,10 +19,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const supabase = createClient();
-    
+
     // Check current session
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUser(user);
       setLoading(false);
     };
@@ -30,7 +32,9 @@ export default function HomePage() {
     checkUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -103,12 +107,7 @@ export default function HomePage() {
         >
           <Link href="/auth/sign-up">Start Free Trial</Link>
         </Button>
-        <Button
-          asChild
-          variant="outline"
-          size="lg"
-          className="text-lg px-8"
-        >
+        <Button asChild variant="outline" size="lg" className="text-lg px-8">
           <Link href="/auth/login">Sign In</Link>
         </Button>
       </div>
@@ -166,8 +165,7 @@ export default function HomePage() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sword className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold">Psychic Damage</span>
+            <span className="text-2xl font-bold font-mono">PSYCHIC_DAMAGE</span>
           </div>
           {renderAuthButtons()}
         </div>
