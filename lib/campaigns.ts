@@ -1,5 +1,7 @@
 import { supabase } from './supabase'
-import { Campaign } from '@/types/database'
+import { Tables } from '@/types/database'
+
+type Campaign = Tables<'campaigns'>
 
 export interface CreateCampaignData {
   title: string
