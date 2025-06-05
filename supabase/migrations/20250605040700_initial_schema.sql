@@ -1,5 +1,7 @@
--- NOTE: This file is READ-ONLY. It was used to initialize the database. Subsequent database changes must be made using Supabase migrations using appropriate command line tools.
+-- Initial Database Schema
+-- Converted from db_init.sql to proper migration
 
+-- Profiles table
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -156,7 +158,7 @@ CREATE INDEX idx_monsters_name ON monsters USING gin(to_tsvector('english', name
 CREATE INDEX idx_monsters_cr ON monsters(challenge_rating);
 CREATE INDEX idx_combat_log_encounter_id ON combat_log(encounter_id);
 
--- Row Level Security
+-- Row Level Security (monsters and combat_log RLS handled in separate migration)
 ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE encounters ENABLE ROW LEVEL SECURITY;
@@ -232,4 +234,4 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Trigger to update profile when user auth data changes
 CREATE OR REPLACE TRIGGER on_auth_user_updated
   AFTER UPDATE ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_user_update();
+  FOR EACH ROW EXECUTE FUNCTION public.handle_user_update(); 
