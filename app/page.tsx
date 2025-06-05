@@ -9,25 +9,165 @@ import {
 } from "@/components/ui/card";
 import { Sword, Users, BookOpen, Zap, Shield, Globe } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 
 export default function HomePage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    // Check current session
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+    };
+
+    checkUser();
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const renderAuthButtons = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" disabled>
+            Loading...
+          </Button>
+        </div>
+      );
+    }
+
+    if (user) {
+      return (
+        <Button asChild className="bg-purple-600 hover:bg-purple-700">
+          <Link href="/dashboard">Dashboard</Link>
+        </Button>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-4">
+        <Button asChild variant="ghost">
+          <Link href="/auth/login">Sign In</Link>
+        </Button>
+        <Button asChild className="bg-purple-600 hover:bg-purple-700">
+          <Link href="/auth/sign-up">Get Started</Link>
+        </Button>
+      </div>
+    );
+  };
+
+  const renderHeroButtons = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center gap-4">
+          <Button size="lg" disabled className="text-lg px-8">
+            Loading...
+          </Button>
+        </div>
+      );
+    }
+
+    if (user) {
+      return (
+        <div className="flex items-center justify-center gap-4">
+          <Button
+            asChild
+            size="lg"
+            className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
+          >
+            <Link href="/dashboard">Roll for Initiative</Link>
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-center gap-4">
+        <Button
+          asChild
+          size="lg"
+          className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
+        >
+          <Link href="/auth/sign-up">Start Free Trial</Link>
+        </Button>
+        <Button asChild variant="outline" size="lg" className="text-lg px-8">
+          <Link href="/auth/login">Sign In</Link>
+        </Button>
+      </div>
+    );
+  };
+
+  const renderCTASection = () => {
+    if (user) {
+      return (
+        <section className="py-20 px-4">
+          <div className="container mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-6">
+              Welcome Back, Dungeon Master!
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Continue managing your campaigns and running amazing D&D sessions.
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
+            >
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          </div>
+        </section>
+      );
+    }
+
+    return (
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Enhance Your D&D Sessions?
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join thousands of Dungeon Masters who are already using Psychic
+            Damage to run better games.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
+          >
+            <Link href="/auth/sign-up">Get Started for Free</Link>
+          </Button>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sword className="h-8 w-8 text-purple-600" />
-            <span className="text-2xl font-bold">Psychic Damage</span>
+            <span className="text-2xl font-bold font-mono">PSYCHIC_DAMAGE</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Button asChild variant="ghost">
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-            <Button asChild className="bg-purple-600 hover:bg-purple-700">
-              <Link href="/auth/sign-up">Get Started</Link>
-            </Button>
-          </div>
+          {renderAuthButtons()}
         </div>
       </header>
 
@@ -44,23 +184,7 @@ export default function HomePage() {
             campaigns, tracking combat, and organizing player characters. Built
             for Dungeon Masters who want to focus on storytelling.
           </p>
-          <div className="flex items-center justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
-            >
-              <Link href="/auth/sign-up">Start Free Trial</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="text-lg px-8"
-            >
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-          </div>
+          {renderHeroButtons()}
         </div>
       </section>
 
@@ -136,24 +260,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Enhance Your D&D Sessions?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of Dungeon Masters who are already using Psychic
-            Damage to run better games.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-purple-600 hover:bg-purple-700 text-lg px-8"
-          >
-            <Link href="/auth/sign-up">Get Started for Free</Link>
-          </Button>
-        </div>
-      </section>
+      {renderCTASection()}
 
       {/* Footer */}
       <footer className="border-t bg-muted/30 py-8 px-4">

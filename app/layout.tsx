@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Psychic Damage",
+  title: "PSYCHIC_DAMAGE",
   description:
     "Campaign Management for D&D 5e",
 };
