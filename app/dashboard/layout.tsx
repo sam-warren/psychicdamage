@@ -1,6 +1,5 @@
 'use client'
 
-import { useAuth } from '@/lib/auth-context'
 import { AppSidebar } from '@/components/app-sidebar'
 import {
   Breadcrumb,
@@ -22,16 +21,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { loading } = useAuth()
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-      </div>
-    )
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />

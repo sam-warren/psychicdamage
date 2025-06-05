@@ -1,58 +1,18 @@
-'use client'
-
-import { useEffect, useState, useCallback } from 'react'
-import { useAuth } from '@/lib/auth-context'
+import { getUser } from '@/lib/auth'
 import { campaignService } from '@/lib/campaigns'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Users, Sword, BookOpen } from 'lucide-react'
 import Link from 'next/link'
-import { Campaign } from '@/types/database'
 
-export default function DashboardPage() {
-  const { user, loading } = useAuth()
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [stats, setStats] = useState({
-    totalCampaigns: 0,
-    totalPlayers: 0,
-    activeCombats: 0,
-  })
-
-  const fetchCampaigns = useCallback(async () => {
-    try {
-      if (!user) return
-      const userCampaigns = await campaignService.getCampaigns(user.id)
-      setCampaigns(userCampaigns)
-    } catch {
-      console.error('Failed to fetch campaigns')
-    }
-  }, [user])
-
-  const fetchStats = useCallback(async () => {
-    // For now, just calculate from campaigns
-    // Later we can add actual stats queries
-    const statsData = {
-      totalCampaigns: campaigns.length,
-      totalPlayers: 0, // We'll calculate this when we add players
-      activeCombats: 0, // We'll calculate this when we add encounters
-    }
-    setStats(statsData)
-  }, [campaigns])
-
-  useEffect(() => {
-    fetchCampaigns()
-  }, [fetchCampaigns])
-
-  useEffect(() => {
-    fetchStats()
-  }, [fetchStats])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    )
+export default async function DashboardPage() {
+  const user = await getUser()
+  const campaigns = user ? await campaignService.getCampaigns(user.id) : []
+  
+  const stats = {
+    totalCampaigns: campaigns.length,
+    totalPlayers: 0, // We'll calculate this when we add players
+    activeCombats: 0, // We'll calculate this when we add encounters
   }
 
   return (

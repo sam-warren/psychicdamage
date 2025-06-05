@@ -26,8 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -42,7 +41,6 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { signOut } = useAuth();
-  const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
@@ -55,7 +53,6 @@ export function NavUser({
       await signOut();
       console.log("Sign out successful, redirecting...");
       toast.success("Signed out successfully");
-      router.push("/login");
     } catch (error) {
       console.error("Sign out error:", error);
       toast.error("Error signing out. Please try again.");

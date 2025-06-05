@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useAuth } from '@/lib/auth-context'
+import { useAuth } from '@/hooks/use-auth'
 import { campaignService } from '@/lib/campaigns'
-import { Campaign } from '@/types/database'
+import { Tables } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -26,9 +26,10 @@ const campaignSchema = z.object({
 })
 
 type CampaignForm = z.infer<typeof campaignSchema>
+type Campaign = Tables<'campaigns'>
 
 export default function CampaignsPage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -47,9 +48,11 @@ export default function CampaignsPage() {
   })
 
   const fetchCampaigns = useCallback(async () => {
+    if (!user) return
+    
     try {
       setLoading(true)
-      const data = await campaignService.getCampaigns(user!.id)
+      const data = await campaignService.getCampaigns(user.id)
       setCampaigns(data)
     } catch {
       toast.error('Error fetching campaigns')
@@ -59,10 +62,10 @@ export default function CampaignsPage() {
   }, [user])
 
   useEffect(() => {
-    if (user) {
+    if (user && !authLoading) {
       fetchCampaigns()
     }
-  }, [user, fetchCampaigns])
+  }, [user, authLoading, fetchCampaigns])
 
   const onSubmit = async (data: CampaignForm) => {
     if (!user) return
@@ -121,7 +124,7 @@ export default function CampaignsPage() {
     reset()
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -260,7 +263,12 @@ export default function CampaignsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4 mr-2" />
-                    Updated {formatDistanceToNow(new Date(campaign.updated_at), { addSuffix: true })}
+                    {campaign.updated_at 
+                      ? `Updated ${formatDistanceToNow(new Date(campaign.updated_at), { addSuffix: true })}`
+                      : campaign.created_at 
+                        ? `Created ${formatDistanceToNow(new Date(campaign.created_at), { addSuffix: true })}`
+                        : 'Recently created'
+                    }
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <Button asChild variant="outline" size="sm">

@@ -22,7 +22,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/hooks/use-auth"
 
 // Sample data - will be replaced with real data later
 const mockCampaigns = [
@@ -136,12 +136,12 @@ const navMain = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
 
   const userData = {
-    name: profile?.display_name || user?.email?.split('@')[0] || 'User',
+    name: user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User',
     email: user?.email || 'user@example.com',
-    avatar: profile?.avatar_url || '',
+    avatar: user?.user_metadata?.avatar_url || '',
   }
 
   return (
