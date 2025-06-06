@@ -1,76 +1,95 @@
 'use client'
 
-import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { Textarea } from '@/components/ui/textarea'
+import { Tables } from '@/types/database'
 
-export function CampaignForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  const [name, setName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+export const campaignSchema = z.object({
+  title: z.string().min(1, 'Campaign title is required').max(100, 'Title must be less than 100 characters'),
+  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+})
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const supabase = createClient()
-    setIsLoading(true)
-    setError(null)
+export type CampaignFormData = z.infer<typeof campaignSchema>
+type Campaign = Tables<'campaigns'>
 
-    try {
-      const { error } = await supabase
-        .from('campaigns')
-        .insert([{ name: name.trim() }])
-      
-      if (error) throw error
-      router.push('/dashboard')
-      router.refresh()
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+interface CampaignFormProps {
+  mode: 'create' | 'edit'
+  campaign?: Campaign | null
+  onSubmit: (data: CampaignFormData) => Promise<void>
+  onCancel: () => void
+  isSubmitting?: boolean
+  className?: string
+}
+
+export function CampaignForm({
+  mode,
+  campaign,
+  onSubmit,
+  onCancel,
+  isSubmitting = false,
+  className,
+}: CampaignFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CampaignFormData>({
+    resolver: zodResolver(campaignSchema),
+    defaultValues: campaign
+      ? {
+          title: campaign.title,
+          description: campaign.description || '',
+        }
+      : undefined,
+  })
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Create Campaign</CardTitle>
-          <CardDescription>Enter the name of your new campaign</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Campaign Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter campaign name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating...' : 'Create Campaign'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className={className}>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Campaign Title</Label>
+          <Input
+            id="title"
+            placeholder="Enter campaign title"
+            {...register('title')}
+            disabled={isSubmitting}
+          />
+          {errors.title && (
+            <p className="text-sm text-red-500">{errors.title.message}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="description">Description (Optional)</Label>
+          <Textarea
+            id="description"
+            placeholder="Enter campaign description"
+            {...register('description')}
+            disabled={isSubmitting}
+          />
+          {errors.description && (
+            <p className="text-sm text-red-500">{errors.description.message}</p>
+          )}
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting
+              ? mode === 'create'
+                ? 'Creating...'
+                : 'Updating...'
+              : mode === 'create'
+                ? 'Create Campaign'
+                : 'Update Campaign'}
+          </Button>
+        </div>
+      </div>
+    </form>
   )
 }

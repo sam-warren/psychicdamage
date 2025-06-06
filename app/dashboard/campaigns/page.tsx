@@ -19,13 +19,8 @@ import * as z from 'zod'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
+import { CampaignForm, campaignSchema, type CampaignFormData } from '@/components/forms/campaign-form'
 
-const campaignSchema = z.object({
-  title: z.string().min(1, 'Campaign title is required').max(100, 'Title must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-})
-
-type CampaignForm = z.infer<typeof campaignSchema>
 type Campaign = Tables<'campaigns'>
 
 export default function CampaignsPage() {
@@ -43,7 +38,7 @@ export default function CampaignsPage() {
     formState: { errors },
     reset,
     setValue,
-  } = useForm<CampaignForm>({
+  } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
   })
 
@@ -67,7 +62,7 @@ export default function CampaignsPage() {
     }
   }, [user, authLoading, fetchCampaigns])
 
-  const onSubmit = async (data: CampaignForm) => {
+  const onSubmit = async (data: CampaignFormData) => {
     if (!user) return
 
     setIsSubmitting(true)
@@ -155,40 +150,12 @@ export default function CampaignsPage() {
                 Create a new campaign to start your D&amp;D adventure.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Campaign Title</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter campaign title"
-                  {...register('title')}
-                  disabled={isSubmitting}
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Enter campaign description"
-                  {...register('description')}
-                  disabled={isSubmitting}
-                />
-                {errors.description && (
-                  <p className="text-sm text-red-500">{errors.description.message}</p>
-                )}
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isSubmitting}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating...' : 'Create Campaign'}
-                </Button>
-              </DialogFooter>
-            </form>
+            <CampaignForm
+              mode="create"
+              onSubmit={onSubmit}
+              onCancel={handleDialogClose}
+              isSubmitting={isSubmitting}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -299,40 +266,13 @@ export default function CampaignsPage() {
               Update your campaign details.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-title">Campaign Title</Label>
-              <Input
-                id="edit-title"
-                placeholder="Enter campaign title"
-                {...register('title')}
-                disabled={isSubmitting}
-              />
-              {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-description">Description (Optional)</Label>
-              <Textarea
-                id="edit-description"
-                placeholder="Enter campaign description"
-                {...register('description')}
-                disabled={isSubmitting}
-              />
-              {errors.description && (
-                <p className="text-sm text-red-500">{errors.description.message}</p>
-              )}
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Updating...' : 'Update Campaign'}
-              </Button>
-            </DialogFooter>
-          </form>
+          <CampaignForm
+            mode="edit"
+            campaign={editingCampaign || undefined}
+            onSubmit={onSubmit}
+            onCancel={handleDialogClose}
+            isSubmitting={isSubmitting}
+          />
         </DialogContent>
       </Dialog>
     </div>

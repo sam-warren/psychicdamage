@@ -10,6 +10,8 @@ import {
   Dice6,
   Scroll,
   Shield,
+  Plus,
+  ChevronRight,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav/nav-main"
@@ -21,12 +23,27 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarGroup,
+  SidebarMenu,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { campaignService } from "@/lib/campaigns"
 import { Tables } from "@/types/database"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -34,14 +51,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
-
-const campaignSchema = z.object({
-  title: z.string().min(1, 'Campaign title is required').max(100, 'Title must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-})
+import {
+  CampaignForm,
+  campaignSchema,
+  type CampaignFormData,
+} from "@/components/forms/campaign-form"
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible"
 
 type CampaignForm = z.infer<typeof campaignSchema>
-type Campaign = Tables<'campaigns'>
+type Campaign = Tables<"campaigns">
 
 const navMain = [
   {
@@ -60,7 +82,7 @@ const navMain = [
         url: "/dashboard/players",
       },
       {
-        title: "Encounters", 
+        title: "Encounters",
         url: "/dashboard/encounters",
       },
       {
@@ -94,7 +116,7 @@ const navMain = [
   },
   {
     title: "Player Management",
-    url: "#", 
+    url: "#",
     icon: Users,
     items: [
       {
@@ -139,24 +161,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<CampaignForm>({
-    resolver: zodResolver(campaignSchema),
-  })
-
   const fetchCampaigns = React.useCallback(async () => {
     if (!user) return
-    
+
     try {
       setLoading(true)
       const data = await campaignService.getCampaigns(user.id)
       setCampaigns(data)
     } catch {
-      toast.error('Error fetching campaigns')
+      toast.error("Error fetching campaigns")
     } finally {
       setLoading(false)
     }
@@ -168,7 +181,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }, [user, fetchCampaigns])
 
-  const onSubmit = async (data: CampaignForm) => {
+  const onSubmit = async (data: CampaignFormData) => {
     if (!user) return
 
     setIsSubmitting(true)
@@ -176,25 +189,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       const newCampaign = await campaignService.createCampaign(user.id, data)
       setCampaigns([newCampaign, ...campaigns])
       setIsCreateDialogOpen(false)
-      toast.success('Campaign created successfully')
-      reset()
+      toast.success("Campaign created successfully")
     } catch {
-      toast.error('Error creating campaign')
+      toast.error("Error creating campaign")
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const userData = {
-    name: user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User',
-    email: user?.email || 'user@example.com',
-    avatar: user?.user_metadata?.avatar_url || '',
+    name:
+      user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User",
+    email: user?.email || "user@example.com",
+    avatar: user?.user_metadata?.avatar_url || "",
   }
 
-  const campaignData = campaigns.map(campaign => ({
+  const campaignData = campaigns.map((campaign) => ({
     id: campaign.id,
     name: campaign.title,
-    description: campaign.description || '',
+    description: campaign.description || "",
     icon: Shield,
   }))
 
@@ -208,53 +221,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ) : campaignData.length > 0 ? (
           <CampaignSwitcher campaigns={campaignData} />
         ) : (
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
-              <Button variant="outline" className="w-full">
-                Create Your First Campaign
-              </Button>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="New Campaign" isActive={isCreateDialogOpen}>
+                    <Plus />
+                    <span>New Campaign</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Create Campaign</DialogTitle>
+                <DialogTitle>Create New Campaign</DialogTitle>
                 <DialogDescription>
-                  Create your first campaign to get started.
+                  Create a new campaign to start your D&amp;D adventure.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Campaign Title</Label>
-                  <Input
-                    id="title"
-                    placeholder="Enter campaign title"
-                    {...register('title')}
-                    disabled={isSubmitting}
-                  />
-                  {errors.title && (
-                    <p className="text-sm text-red-500">{errors.title.message}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description (Optional)</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Enter campaign description"
-                    {...register('description')}
-                    disabled={isSubmitting}
-                  />
-                  {errors.description && (
-                    <p className="text-sm text-red-500">{errors.description.message}</p>
-                  )}
-                </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} disabled={isSubmitting}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Creating...' : 'Create Campaign'}
-                  </Button>
-                </DialogFooter>
-              </form>
+              <CampaignForm
+                mode="create"
+                onSubmit={onSubmit}
+                onCancel={() => setIsCreateDialogOpen(false)}
+                isSubmitting={isSubmitting}
+              />
             </DialogContent>
           </Dialog>
         )}
@@ -268,4 +261,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarRail />
     </Sidebar>
   )
-} 
+}
