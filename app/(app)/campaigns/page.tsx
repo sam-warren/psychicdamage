@@ -1,124 +1,23 @@
-'use client'
-
-import { useEffect, useState, useCallback } from 'react'
-import { useAuth } from '@/hooks/use-auth'
-import { campaignService } from '@/services/campaigns'
-import { Tables } from '@/types/database'
+import { CampaignActions } from '@/components/campaigns/campaign-actions'
+import { CreateCampaignDialog } from '@/components/campaigns/create-campaign-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Plus, MoreHorizontal, Edit, Trash2, Users, Calendar, BookOpen } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
-import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { campaignService } from '@/services/campaigns'
 import { formatDistanceToNow } from 'date-fns'
-import { CampaignForm, campaignSchema, type CampaignFormData } from '@/components/forms/campaign-form'
+import { BookOpen, Calendar, Users } from 'lucide-react'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
-type Campaign = Tables<'campaigns'>
+export default async function CampaignsPage() {
+  const supabase = await createClient()
 
-export default function CampaignsPage() {
-  const { user, loading: authLoading } = useAuth()
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [loading, setLoading] = useState(true)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const {
-    reset,
-    setValue,
-  } = useForm<CampaignFormData>({
-    resolver: zodResolver(campaignSchema),
-  })
-
-  const fetchCampaigns = useCallback(async () => {
-    if (!user) return
-    
-    try {
-      setLoading(true)
-      const data = await campaignService.getCampaigns(user.id)
-      setCampaigns(data)
-    } catch {
-      toast.error('Error fetching campaigns')
-    } finally {
-      setLoading(false)
-    }
-  }, [user])
-
-  useEffect(() => {
-    if (user && !authLoading) {
-      fetchCampaigns()
-    }
-  }, [user, authLoading, fetchCampaigns])
-
-  const onSubmit = async (data: CampaignFormData) => {
-    if (!user) return
-
-    setIsSubmitting(true)
-    try {
-      if (editingCampaign) {
-        // Update existing campaign
-        const updatedCampaign = await campaignService.updateCampaign(
-          editingCampaign.id,
-          user.id,
-          data
-        )
-        setCampaigns(campaigns.map(c => c.id === updatedCampaign.id ? updatedCampaign : c))
-        setIsEditDialogOpen(false)
-        setEditingCampaign(null)
-        toast.success('Campaign updated successfully')
-      } else {
-        // Create new campaign
-        const newCampaign = await campaignService.createCampaign(user.id, data)
-        setCampaigns([newCampaign, ...campaigns])
-        setIsCreateDialogOpen(false)
-        toast.success('Campaign created successfully')
-      }
-      reset()
-    } catch {
-      toast.error(editingCampaign ? 'Error updating campaign' : 'Error creating campaign')
-    } finally {
-      setIsSubmitting(false)
-    }
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data?.user) {
+    redirect('/auth/login')
   }
 
-  const handleEdit = (campaign: Campaign) => {
-    setEditingCampaign(campaign)
-    setValue('title', campaign.title)
-    setValue('description', campaign.description || '')
-    setIsEditDialogOpen(true)
-  }
-
-  const handleDelete = async (campaign: Campaign) => {
-    if (!user) return
-
-    try {
-      await campaignService.deleteCampaign(campaign.id, user.id)
-      setCampaigns(campaigns.filter(c => c.id !== campaign.id))
-      toast.success('Campaign deleted successfully')
-    } catch {
-      toast.error('Error deleting campaign')
-    }
-  }
-
-  const handleDialogClose = () => {
-    setIsCreateDialogOpen(false)
-    setIsEditDialogOpen(false)
-    setEditingCampaign(null)
-    reset()
-  }
-
-  if (authLoading || loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
+  const campaigns = await campaignService.getCampaigns(data.user.id)
 
   return (
     <div className="space-y-6">
@@ -129,28 +28,7 @@ export default function CampaignsPage() {
             Manage your D&D campaigns and sessions
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Campaign
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Campaign</DialogTitle>
-              <DialogDescription>
-                Create a new campaign to start your D&amp;D adventure.
-              </DialogDescription>
-            </DialogHeader>
-            <CampaignForm
-              mode="create"
-              onSubmit={onSubmit}
-              onCancel={handleDialogClose}
-              isSubmitting={isSubmitting}
-            />
-          </DialogContent>
-        </Dialog>
+        <CreateCampaignDialog />
       </div>
 
       {campaigns.length === 0 ? (
@@ -161,10 +39,7 @@ export default function CampaignsPage() {
             <p className="text-muted-foreground text-center mb-6 max-w-sm">
               Create your first campaign to start managing your D&D sessions, players, and encounters.
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Your First Campaign
-            </Button>
+            <CreateCampaignDialog triggerText="Create Your First Campaign" />
           </CardContent>
         </Card>
       ) : (
@@ -179,44 +54,7 @@ export default function CampaignsPage() {
                       {campaign.description || 'No description provided'}
                     </CardDescription>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(campaign)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete &quot;{campaign.title}&quot;? This action cannot be undone and will delete all associated players, encounters, and notes.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(campaign)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Delete Campaign
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <CampaignActions campaign={campaign} />
                 </div>
               </CardHeader>
               <CardContent>
@@ -249,25 +87,6 @@ export default function CampaignsPage() {
           ))}
         </div>
       )}
-
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Campaign</DialogTitle>
-            <DialogDescription>
-              Update your campaign details.
-            </DialogDescription>
-          </DialogHeader>
-          <CampaignForm
-            mode="edit"
-            campaign={editingCampaign || undefined}
-            onSubmit={onSubmit}
-            onCancel={handleDialogClose}
-            isSubmitting={isSubmitting}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   )
 } 

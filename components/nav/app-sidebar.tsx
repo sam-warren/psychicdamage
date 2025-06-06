@@ -1,57 +1,40 @@
-"use client"
+"use client";
 
-import * as React from "react"
 import {
   BookOpen,
+  Home,
+  Settings2,
+  Shield,
   Sword,
   Users,
-  Settings2,
-  Home,
-  Shield,
   Plus,
-} from "lucide-react"
+} from "lucide-react";
+import * as React from "react";
 
-import { NavMain } from "@/components/nav/nav-main"
-import { NavUser } from "@/components/nav/nav-user"
-import { CampaignSwitcher } from "@/components/molecules/campaign-switcher"
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog";
+import { CampaignSwitcher } from "@/components/molecules/campaign-switcher";
+import { NavMain } from "@/components/nav/nav-main";
+import { NavUser } from "@/components/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarMenu,
-} from "@/components/ui/sidebar"
-import { useAuth } from "@/hooks/use-auth"
-import { campaignService } from "@/services/campaigns"
-import { Tables } from "@/types/database"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import * as z from "zod"
-import { toast } from "sonner"
-import {
-  CampaignForm,
-  campaignSchema,
-  type CampaignFormData,
-} from "@/components/forms/campaign-form"
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use-auth";
+import { Tables } from "@/types/database";
 
-type CampaignForm = z.infer<typeof campaignSchema>
-type Campaign = Tables<"campaigns">
+type Campaign = Tables<"campaigns">;
 
 const navMain = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
-    isActive: true,
   },
   {
     title: "Campaign Tools",
@@ -133,104 +116,48 @@ const navMain = [
       },
     ],
   },
-]
+];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth()
-  const [campaigns, setCampaigns] = React.useState<Campaign[]>([])
-  const [loading, setLoading] = React.useState(true)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  campaigns: Campaign[];
+}
 
-  const fetchCampaigns = React.useCallback(async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-      const data = await campaignService.getCampaigns(user.id)
-      setCampaigns(data)
-    } catch {
-      toast.error("Error fetching campaigns")
-    } finally {
-      setLoading(false)
-    }
-  }, [user])
-
-  React.useEffect(() => {
-    if (user) {
-      fetchCampaigns()
-    }
-  }, [user, fetchCampaigns])
-
-  const onSubmit = async (data: CampaignFormData) => {
-    if (!user) return
-
-    setIsSubmitting(true)
-    try {
-      const newCampaign = await campaignService.createCampaign(user.id, data)
-      setCampaigns([newCampaign, ...campaigns])
-      setIsCreateDialogOpen(false)
-      toast.success("Campaign created successfully")
-    } catch {
-      toast.error("Error creating campaign")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
+  const { user } = useAuth();
 
   const userData = {
     name:
       user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User",
     email: user?.email || "user@example.com",
     avatar: user?.user_metadata?.avatar_url || "",
-  }
+  };
 
   const campaignData = campaigns.map((campaign) => ({
     id: campaign.id,
     name: campaign.title,
     description: campaign.description || "",
     icon: Shield,
-  }))
+  }));
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
-        {loading ? (
-          <div className="flex items-center justify-center h-12">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          </div>
-        ) : campaignData.length > 0 ? (
+        {campaignData.length > 0 ? (
           <CampaignSwitcher campaigns={campaignData} />
         ) : (
-          <Dialog
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="New Campaign" isActive={isCreateDialogOpen}>
-                    <Plus />
-                    <span>New Campaign</span>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CreateCampaignDialog
+                triggerText="New Campaign"
+                trigger={
+                  <SidebarMenuButton>
+                    <Plus className="h-4 w-4" />
+                    New Campaign
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Campaign</DialogTitle>
-                <DialogDescription>
-                  Create a new campaign to start your D&amp;D adventure.
-                </DialogDescription>
-              </DialogHeader>
-              <CampaignForm
-                mode="create"
-                onSubmit={onSubmit}
-                onCancel={() => setIsCreateDialogOpen(false)}
-                isSubmitting={isSubmitting}
+                }
               />
-            </DialogContent>
-          </Dialog>
+            </SidebarMenuItem>
+          </SidebarMenu>
         )}
       </SidebarHeader>
       <SidebarContent>
@@ -241,5 +168,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

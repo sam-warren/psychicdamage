@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronsUpDown, Plus, Sword } from "lucide-react"
+import { ChevronsUpDown, Ellipsis, Plus } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 import {
   DropdownMenu,
@@ -11,51 +12,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog";
 
 export function CampaignSwitcher({
   campaigns,
 }: {
   campaigns: {
-    id: string
-    name: string
-    description: string
-    icon: React.ElementType
-  }[]
+    id: string;
+    name: string;
+    description: string;
+    icon: React.ElementType;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
-  const [activeCampaign, setActiveCampaign] = React.useState(campaigns[0])
-
-  // If no campaigns, show a default state
-  if (!activeCampaign && campaigns.length === 0) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
-            <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-              <Sword className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">No Campaigns</span>
-              <span className="truncate text-xs text-muted-foreground">Create your first campaign</span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    )
-  }
+  const { isMobile } = useSidebar();
+  const [activeCampaign, setActiveCampaign] = React.useState(campaigns[0]);
 
   if (!activeCampaign) {
-    return null
+    return null;
   }
 
   return (
@@ -71,8 +51,12 @@ export function CampaignSwitcher({
                 <activeCampaign.icon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeCampaign.name}</span>
-                <span className="truncate text-xs text-muted-foreground">{activeCampaign.description}</span>
+                <span className="truncate font-medium">
+                  {activeCampaign.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {activeCampaign.description}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -97,22 +81,36 @@ export function CampaignSwitcher({
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{campaign.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">{campaign.description}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {campaign.description}
+                  </span>
                 </div>
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium">New Campaign</div>
-              <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
+            <DropdownMenuItem asChild className="gap-2 p-2">
+              <Link href="/campaigns">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <Ellipsis className="size-4" />
+                </div>
+                <div className="font-medium">View All</div>
+              </Link>
             </DropdownMenuItem>
+            <CreateCampaignDialog
+              trigger={
+                <DropdownMenuItem className="gap-2 p-2">
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                    <Plus className="size-4" />
+                  </div>
+                  <div className="font-medium">New Campaign</div>
+                  <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              }
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
-} 
+  );
+}
