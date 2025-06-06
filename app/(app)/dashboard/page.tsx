@@ -1,5 +1,5 @@
 import { getUser, getUserProfile } from "@/lib/auth";
-import { campaignService } from "@/lib/campaigns";
+import { campaignService } from "@/services/campaigns";
 import {
   Card,
   CardContent,
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
                 </CardDescription>
               </div>
               <Button asChild size="sm">
-                <Link href="/dashboard/campaigns">
+                <Link href="/campaigns">
                   <Plus className="h-4 w-4 mr-2" />
                   New Campaign
                 </Link>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                   your first campaign to begin your D&amp;D adventure!
                 </p>
                 <Button asChild>
-                  <Link href="/dashboard/campaigns">
+                  <Link href="/campaigns">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Campaign
                   </Link>
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
                       </p>
                     </div>
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/dashboard/campaigns/${campaign.id}`}>
+                      <Link href={`/campaigns/${campaign.id}`}>
                         View
                       </Link>
                     </Button>
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                 ))}
                 {campaigns.length >= 5 && (
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/dashboard/campaigns">View All Campaigns</Link>
+                    <Link href="/campaigns">View All Campaigns</Link>
                   </Button>
                 )}
               </div>
@@ -166,7 +166,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <Button asChild className="w-full justify-start">
-              <Link href="/dashboard/campaigns">
+              <Link href="/campaigns">
                 <BookOpen className="h-4 w-4 mr-2" />
                 Manage Campaigns
               </Link>

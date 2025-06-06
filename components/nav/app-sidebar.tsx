@@ -25,7 +25,7 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
-import { campaignService } from "@/lib/campaigns"
+import { campaignService } from "@/services/campaigns"
 import { Tables } from "@/types/database"
 import {
   Dialog,
