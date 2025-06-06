@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Drawer,
   DrawerContent,
@@ -7,49 +7,48 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Tables } from "@/types/database";
+} from "@/components/ui/drawer"
+import { Tables } from "@/types/database"
 
-type Monster = Tables<"monsters">;
+type Monster = Tables<"monsters">
 
 interface MonsterStatSheetProps {
-  monster: Monster;
+  monster: Monster
 }
 
 export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
   // Helper function to format ability scores
   const formatAbilityScore = (score: number) => {
-    const modifier = Math.floor((score - 10) / 2);
-    return `${score} (${modifier >= 0 ? "+" : ""}${modifier})`;
-  };
+    const modifier = Math.floor((score - 10) / 2)
+    return `${score} (${modifier >= 0 ? "+" : ""}${modifier})`
+  }
 
   // Parse JSON fields safely based on actual database structure
-  const abilityScores =
-    (monster.ability_scores as Record<string, string>) || {};
-  const skills = (monster.skills as { raw?: string }) || {};
-  const speed = (monster.speed as { raw?: string }) || {};
+  const abilityScores = (monster.ability_scores as Record<string, string>) || {}
+  const skills = (monster.skills as { raw?: string }) || {}
+  const speed = (monster.speed as { raw?: string }) || {}
   const allActions =
     (monster.actions as Array<{
-      name: string;
-      description: string;
-      reach?: string;
-      to_hit?: string;
-      damage_dice?: string;
-      damage_type?: string;
-      extra_damage_dice?: string;
-      extra_damage_type?: string;
-      saving_throw?: string;
-    }>) || [];
+      name: string
+      description: string
+      reach?: string
+      to_hit?: string
+      damage_dice?: string
+      damage_type?: string
+      extra_damage_dice?: string
+      extra_damage_type?: string
+      saving_throw?: string
+    }>) || []
   const specialAbilities =
     (monster.special_abilities as Array<{
-      name: string;
-      description: string;
-    }>) || [];
+      name: string
+      description: string
+    }>) || []
   const legendaryActions =
     (monster.legendary_actions as Array<{
-      name: string;
-      description: string;
-    }>) || [];
+      name: string
+      description: string
+    }>) || []
 
   // Separate regular actions from legendary actions within the actions array
   const regularActions = allActions.filter(
@@ -59,7 +58,7 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
       !["Detect", "Tail Swipe", "Psychic Drain"].some((legendary) =>
         action.name.includes(legendary)
       )
-  );
+  )
 
   return (
     <Drawer direction={"bottom"}>
@@ -119,22 +118,23 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
             <div className="grid grid-cols-6 gap-2 text-center">
               {["STR", "DEX", "CON", "INT", "WIS", "CHA"].map((ability) => {
                 const score =
-                  parseInt(abilityScores[ability.toLowerCase()]) || 10;
+                  parseInt(abilityScores[ability.toLowerCase()]) || 10
                 return (
                   <div key={ability} className="border rounded p-2">
                     <div className="font-semibold text-xs">{ability}</div>
                     <div className="text-sm">{formatAbilityScore(score)}</div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
 
           {/* Skills, Resistances, etc. */}
           {(skills.raw ||
-            monster.damage_resistances?.length ||
-            monster.damage_immunities?.length ||
-            monster.condition_immunities?.length ||
+            monster.damage_resistances ||
+            monster.damage_immunities ||
+            monster.condition_immunities ||
+            monster.damage_vulnerabilities ||
             monster.senses ||
             monster.languages) && (
             <div>
@@ -147,24 +147,34 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
                     <strong>Skills:</strong> {skills.raw}
                   </div>
                 )}
-                {monster.damage_resistances?.length && (
-                  <div>
-                    <strong>Damage Resistances:</strong>{" "}
-                    {monster.damage_resistances.join(", ")}
-                  </div>
-                )}
-                {monster.damage_immunities?.length && (
-                  <div>
-                    <strong>Damage Immunities:</strong>{" "}
-                    {monster.damage_immunities.join(", ")}
-                  </div>
-                )}
-                {monster.condition_immunities?.length && (
-                  <div>
-                    <strong>Condition Immunities:</strong>{" "}
-                    {monster.condition_immunities.join(", ")}
-                  </div>
-                )}
+                {monster.damage_resistances &&
+                  monster.damage_resistances.length > 0 && (
+                    <div>
+                      <strong>Damage Resistances:</strong>{" "}
+                      {monster.damage_resistances.join(", ")}
+                    </div>
+                  )}
+                {monster.damage_immunities &&
+                  monster.damage_immunities.length > 0 && (
+                    <div>
+                      <strong>Damage Immunities:</strong>{" "}
+                      {monster.damage_immunities.join(", ")}
+                    </div>
+                  )}
+                {monster.condition_immunities &&
+                  monster.condition_immunities.length > 0 && (
+                    <div>
+                      <strong>Condition Immunities:</strong>{" "}
+                      {monster.condition_immunities.join(", ")}
+                    </div>
+                  )}
+                {monster.damage_vulnerabilities &&
+                  monster.damage_vulnerabilities.length > 0 && (
+                    <div>
+                      <strong>Damage Vulnerabilities:</strong>{" "}
+                      {monster.damage_vulnerabilities.join(", ")}
+                    </div>
+                  )}
                 {monster.senses && (
                   <div>
                     <strong>Senses:</strong> {monster.senses}
@@ -259,5 +269,5 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
         </div>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }
