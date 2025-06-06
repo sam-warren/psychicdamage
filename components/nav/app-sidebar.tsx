@@ -25,25 +25,9 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
-import { campaignService } from "@/services/campaigns"
 import { Tables } from "@/types/database"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import * as z from "zod"
-import { toast } from "sonner"
-import {
-  CampaignForm,
-  campaignSchema,
-  type CampaignFormData,
-} from "@/components/forms/campaign-form"
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog"
 
-type CampaignForm = z.infer<typeof campaignSchema>
 type Campaign = Tables<"campaigns">
 
 const navMain = [
@@ -141,24 +125,6 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
   const { user } = useAuth()
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
-
-  const onSubmit = async (data: CampaignFormData) => {
-    if (!user) return
-
-    setIsSubmitting(true)
-    try {
-      const newCampaign = await campaignService.createCampaign(user.id, data)
-      campaigns.push(newCampaign)
-      setIsCreateDialogOpen(false)
-      toast.success("Campaign created successfully")
-    } catch {
-      toast.error("Error creating campaign")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   const userData = {
     name:
@@ -180,38 +146,11 @@ export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
         {campaignData.length > 0 ? (
           <CampaignSwitcher campaigns={campaignData} />
         ) : (
-          <Dialog
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    tooltip="New Campaign"
-                    isActive={isCreateDialogOpen}
-                  >
-                    <Plus />
-                    <span>New Campaign</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Campaign</DialogTitle>
-                <DialogDescription>
-                  Create a new campaign to start your D&amp;D adventure.
-                </DialogDescription>
-              </DialogHeader>
-              <CampaignForm
-                mode="create"
-                onSubmit={onSubmit}
-                onCancel={() => setIsCreateDialogOpen(false)}
-                isSubmitting={isSubmitting}
-              />
-            </DialogContent>
-          </Dialog>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CreateCampaignDialog triggerText="New Campaign" />
+            </SidebarMenuItem>
+          </SidebarMenu>
         )}
       </SidebarHeader>
       <SidebarContent>

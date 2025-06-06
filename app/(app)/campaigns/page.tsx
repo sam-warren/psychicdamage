@@ -1,7 +1,13 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { campaignServerService } from '@/services/campaigns-server'
-import { CampaignsClient } from '@/components/campaigns/campaigns-client'
+import { campaignService } from '@/services/campaigns'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Plus, MoreHorizontal, Edit, Trash2, Users, Calendar, BookOpen } from 'lucide-react'
+import Link from 'next/link'
+import { formatDistanceToNow } from 'date-fns'
+import { CreateCampaignDialog } from '@/components/campaigns/create-campaign-dialog'
+import { CampaignActions } from '@/components/campaigns/campaign-actions'
 
 export default async function CampaignsPage() {
   const supabase = await createClient()
@@ -12,7 +18,76 @@ export default async function CampaignsPage() {
   }
 
   // Fetch campaigns server-side
-  const campaigns = await campaignServerService.getCampaigns(data.user.id)
+  const campaigns = await campaignService.getCampaigns(data.user.id)
 
-  return <CampaignsClient initialCampaigns={campaigns} />
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Campaigns</h1>
+          <p className="text-muted-foreground">
+            Manage your D&D campaigns and sessions
+          </p>
+        </div>
+        <CreateCampaignDialog />
+      </div>
+
+      {campaigns.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-medium mb-2">No campaigns yet</h3>
+            <p className="text-muted-foreground text-center mb-6 max-w-sm">
+              Create your first campaign to start managing your D&D sessions, players, and encounters.
+            </p>
+            <CreateCampaignDialog triggerText="Create Your First Campaign" />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {campaigns.map((campaign) => (
+            <Card key={campaign.id} className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="line-clamp-1">{campaign.title}</CardTitle>
+                    <CardDescription className="line-clamp-2">
+                      {campaign.description || 'No description provided'}
+                    </CardDescription>
+                  </div>
+                  <CampaignActions campaign={campaign} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {campaign.updated_at 
+                      ? `Updated ${formatDistanceToNow(new Date(campaign.updated_at), { addSuffix: true })}`
+                      : campaign.created_at 
+                        ? `Created ${formatDistanceToNow(new Date(campaign.created_at), { addSuffix: true })}`
+                        : 'Recently created'
+                    }
+                  </div>
+                  <div className="flex items-center justify-between pt-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/campaigns/${campaign.id}`}>
+                        View Details
+                      </Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href={`/campaigns/${campaign.id}/players`}>
+                        <Users className="h-4 w-4 mr-2" />
+                        Manage
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 } 

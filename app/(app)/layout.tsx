@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/server";
-import { campaignServerService } from "@/services/campaigns-server";
+import { campaignService } from "@/services/campaigns";
 
 export default async function DashboardLayout({
   children,
@@ -29,7 +29,7 @@ export default async function DashboardLayout({
   }
 
   // Fetch campaigns server-side
-  const campaigns = await campaignServerService.getCampaigns(data.user.id);
+  const campaigns = await campaignService.getCampaigns(data.user.id);
 
   
   
