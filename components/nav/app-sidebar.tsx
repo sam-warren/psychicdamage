@@ -3,11 +3,8 @@
 import {
   BookOpen,
   Home,
-  Settings2,
-  Shield,
-  Sword,
-  Users,
   Plus,
+  Shield
 } from "lucide-react";
 import * as React from "react";
 
@@ -49,73 +46,69 @@ const navMain = [
         title: "Creatures",
         url: "/creatures",
       },
-      {
-        title: "Encounters",
-        url: "/encounters",
-      },
-      {
-        title: "Notes",
-        url: "/notes",
-      },
+      // {
+      //   title: "Encounters",
+      //   url: "/encounters",
+      // },
+      // {
+      //   title: "Notes",
+      //   url: "/notes",
+      // },
     ],
   },
-  {
-    title: "Combat",
-    url: "#",
-    icon: Sword,
-    items: [
-      {
-        title: "Initiative Tracker",
-        url: "/dashboard/combat",
-      },
-      {
-        title: "Monster Manual",
-        url: "/dashboard/monsters",
-      },
-      {
-        title: "Encounter Builder",
-        url: "/dashboard/encounter-builder",
-      },
-    ],
-  },
-  {
-    title: "Player Management",
-    url: "#",
-    icon: Users,
-    items: [
-      {
-        title: "Characters",
-        url: "/dashboard/characters",
-      },
-      {
-        title: "Sessions",
-        url: "/dashboard/sessions",
-      },
-      {
-        title: "Party Overview",
-        url: "/dashboard/party",
-      },
-    ],
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings2,
-    items: [
-      {
-        title: "General",
-        url: "/dashboard/settings",
-      },
-      {
-        title: "Campaigns",
-        url: "/dashboard/settings/campaigns",
-      },
-      {
-        title: "Preferences",
-        url: "/dashboard/settings/preferences",
-      },
-    ],
-  },
+  // {
+  //   title: "Combat",
+  //   url: "#",
+  //   icon: Sword,
+  //   items: [
+  //     {
+  //       title: "Initiative Tracker",
+  //       url: "/dashboard/combat",
+  //     },
+  //     {
+  //       title: "Encounter Builder",
+  //       url: "/dashboard/encounter-builder",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Player Management",
+  //   url: "#",
+  //   icon: Users,
+  //   items: [
+  //     {
+  //       title: "Characters",
+  //       url: "/dashboard/characters",
+  //     },
+  //     {
+  //       title: "Sessions",
+  //       url: "/dashboard/sessions",
+  //     },
+  //     {
+  //       title: "Party Overview",
+  //       url: "/dashboard/party",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Settings",
+  //   url: "#",
+  //   icon: Settings2,
+  //   items: [
+  //     {
+  //       title: "General",
+  //       url: "/dashboard/settings",
+  //     },
+  //     {
+  //       title: "Campaigns",
+  //       url: "/dashboard/settings/campaigns",
+  //     },
+  //     {
+  //       title: "Preferences",
+  //       url: "/dashboard/settings/preferences",
+  //     },
+  //   ],
+  // },
 ];
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
