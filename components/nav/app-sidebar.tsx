@@ -135,32 +135,14 @@ const navMain = [
   },
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  campaigns: Campaign[]
+}
+
+export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
   const { user } = useAuth()
-  const [campaigns, setCampaigns] = React.useState<Campaign[]>([])
-  const [loading, setLoading] = React.useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-
-  const fetchCampaigns = React.useCallback(async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-      const data = await campaignService.getCampaigns(user.id)
-      setCampaigns(data)
-    } catch {
-      toast.error("Error fetching campaigns")
-    } finally {
-      setLoading(false)
-    }
-  }, [user])
-
-  React.useEffect(() => {
-    if (user) {
-      fetchCampaigns()
-    }
-  }, [user, fetchCampaigns])
 
   const onSubmit = async (data: CampaignFormData) => {
     if (!user) return
@@ -168,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setIsSubmitting(true)
     try {
       const newCampaign = await campaignService.createCampaign(user.id, data)
-      setCampaigns([newCampaign, ...campaigns])
+      campaigns.push(newCampaign)
       setIsCreateDialogOpen(false)
       toast.success("Campaign created successfully")
     } catch {
@@ -195,11 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {loading ? (
-          <div className="flex items-center justify-center h-12">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          </div>
-        ) : campaignData.length > 0 ? (
+        {campaignData.length > 0 ? (
           <CampaignSwitcher campaigns={campaignData} />
         ) : (
           <Dialog
@@ -209,7 +187,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <DialogTrigger asChild>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="New Campaign" isActive={isCreateDialogOpen}>
+                  <SidebarMenuButton
+                    tooltip="New Campaign"
+                    isActive={isCreateDialogOpen}
+                  >
                     <Plus />
                     <span>New Campaign</span>
                   </SidebarMenuButton>

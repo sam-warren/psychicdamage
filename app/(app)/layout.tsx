@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/server";
+import { campaignServerService } from "@/services/campaigns-server";
 
 export default async function DashboardLayout({
   children,
@@ -27,9 +28,14 @@ export default async function DashboardLayout({
     redirect("/auth/login");
   }
 
+  // Fetch campaigns server-side
+  const campaigns = await campaignServerService.getCampaigns(data.user.id);
+
+  
+  
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar campaigns={campaigns} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

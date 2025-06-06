@@ -1,5 +1,5 @@
 import { getUser, getUserProfile } from "@/lib/auth";
-import { campaignService } from "@/services/campaigns";
+import { campaignServerService } from "@/services/campaigns-server";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import Link from "next/link";
 export default async function DashboardPage() {
   const user = await getUser();
   const profile = await getUserProfile();
-  const campaigns = user ? await campaignService.getCampaigns(user.id) : [];
+  const campaigns = user ? await campaignServerService.getCampaigns(user.id) : [];
 
   // Get user's display name with fallbacks
   const userName =
