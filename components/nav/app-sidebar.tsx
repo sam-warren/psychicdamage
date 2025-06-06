@@ -43,19 +43,19 @@ const navMain = [
     items: [
       {
         title: "Players",
-        url: "/dashboard/players",
+        url: "/players",
+      },
+      {
+        title: "Creatures",
+        url: "/creatures",
       },
       {
         title: "Encounters",
-        url: "/dashboard/encounters",
+        url: "/encounters",
       },
       {
         title: "Notes",
-        url: "/dashboard/notes",
-      },
-      {
-        title: "NPCs",
-        url: "/dashboard/npcs",
+        url: "/notes",
       },
     ],
   },
