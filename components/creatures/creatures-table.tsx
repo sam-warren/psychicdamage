@@ -98,7 +98,7 @@ export function CreaturesDataTable({ data: initialData }: { data: Monster[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 50,
   });
   const sortableId = React.useId();
   const sensors = useSensors(
@@ -232,7 +232,7 @@ export function CreaturesDataTable({ data: initialData }: { data: Monster[] }) {
         value="all-monsters"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <div className="overflow-hidden rounded-lg border">
+        <div className="max-h-[70vh] overflow-hidden overflow-y-auto rounded-lg border">
           <DndContext
             collisionDetection={closestCenter}
             modifiers={[restrictToVerticalAxis]}
