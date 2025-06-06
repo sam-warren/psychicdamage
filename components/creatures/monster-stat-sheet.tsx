@@ -8,7 +8,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Tables } from "@/types/database";
 
 type Monster = Tables<"monsters">;
@@ -18,8 +17,6 @@ interface MonsterStatSheetProps {
 }
 
 export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
-  const isMobile = useIsMobile();
-
   // Helper function to format ability scores
   const formatAbilityScore = (score: number) => {
     const modifier = Math.floor((score - 10) / 2);
@@ -65,13 +62,13 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
   );
 
   return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
+    <Drawer direction={"bottom"}>
       <DrawerTrigger asChild>
         <Button variant="link" className="text-foreground w-fit px-0 text-left">
           {monster.name}
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="max-w-2xl">
+      <DrawerContent className="max-w-5xl mx-auto">
         <DrawerHeader className="gap-1">
           <DrawerTitle className="text-2xl font-bold">
             {monster.name}
@@ -263,4 +260,4 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
       </DrawerContent>
     </Drawer>
   );
-} 
+}
