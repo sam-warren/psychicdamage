@@ -217,19 +217,22 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <div className="space-y-3">
                 {regularActions.map((action, index: number) => (
                   <div key={index}>
-                    <div className="font-semibold">{action.name}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold text-lg">{action.name}</div>
+                      {action.to_hit && (
+                        <Badge>
+                          <strong>Attack:</strong> {action.to_hit} to hit,
+                          <strong>Reach:</strong> {action.reach || "5 ft."} |{" "}
+                          <strong>Damage:</strong>{" "}
+                          {action.damage_dice} {action.damage_type}
+                          {action.extra_damage_dice &&
+                            ` + ${action.extra_damage_dice} ${action.extra_damage_type}`}
+                        </Badge>
+                      )}
+                    </div>
                     <div className="text-muted-foreground">
                       {action.description}
                     </div>
-                    {action.to_hit && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Attack: {action.to_hit} to hit, reach{" "}
-                        {action.reach || "5 ft."} | Damage: {action.damage_dice}{" "}
-                        {action.damage_type}
-                        {action.extra_damage_dice &&
-                          ` + ${action.extra_damage_dice} ${action.extra_damage_type}`}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
