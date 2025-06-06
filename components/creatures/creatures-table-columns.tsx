@@ -72,27 +72,27 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "challenge_rating",
-    header: () => <div className="w-full text-right">CR</div>,
+    header: () => <div className="w-12 text-right">CR</div>,
     cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-12 text-right font-medium">
         {row.original.challenge_rating ?? "-"}
       </div>
     ),
   },
   {
     accessorKey: "armor_class",
-    header: () => <div className="w-full text-right">AC</div>,
+    header: () => <div className="w-12 text-right">AC</div>,
     cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-12 text-right font-medium">
         {row.original.armor_class ?? "-"}
       </div>
     ),
   },
   {
     accessorKey: "hit_points",
-    header: () => <div className="w-full text-right">HP</div>,
+    header: () => <div className="w-16 text-right">HP</div>,
     cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-16 text-right font-medium">
         {row.original.hit_points ?? "-"}
       </div>
     ),
@@ -122,7 +122,7 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
         monsterType && validCreatureTypes.includes(monsterType as CreatureType)
 
       return (
-        <div className="w-24 flex items-center gap-2">
+        <div className="w-20 flex items-center gap-2">
           {isValidCreatureType ? (
             <DndBadge
               badgeType={monsterType as DndBadgeType}
@@ -159,7 +159,7 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
       console.log("isValidSize", isValidSize)
 
       return (
-        <div className="w-20">
+        <div className="w-16">
           {isValidSize ? (
             <DndBadge
               badgeType={monsterSize as DndBadgeType}
