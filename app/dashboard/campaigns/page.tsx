@@ -6,26 +6,17 @@ import { campaignService } from '@/lib/campaigns'
 import { Tables } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Plus, MoreHorizontal, Edit, Trash2, Users, Calendar, BookOpen } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
+import { CampaignForm, campaignSchema, type CampaignFormData } from '@/components/forms/campaign-form'
 
-const campaignSchema = z.object({
-  title: z.string().min(1, 'Campaign title is required').max(100, 'Title must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-})
-
-type CampaignForm = z.infer<typeof campaignSchema>
 type Campaign = Tables<'campaigns'>
 
 export default function CampaignsPage() {
@@ -38,12 +29,9 @@ export default function CampaignsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
     reset,
     setValue,
-  } = useForm<CampaignForm>({
+  } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
   })
 
@@ -67,7 +55,7 @@ export default function CampaignsPage() {
     }
   }, [user, authLoading, fetchCampaigns])
 
-  const onSubmit = async (data: CampaignForm) => {
+  const onSubmit = async (data: CampaignFormData) => {
     if (!user) return
 
     setIsSubmitting(true)
@@ -155,40 +143,12 @@ export default function CampaignsPage() {
                 Create a new campaign to start your D&amp;D adventure.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Campaign Title</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter campaign title"
-                  {...register('title')}
-                  disabled={isSubmitting}
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Enter campaign description"
-                  {...register('description')}
-                  disabled={isSubmitting}
-                />
-                {errors.description && (
-                  <p className="text-sm text-red-500">{errors.description.message}</p>
-                )}
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isSubmitting}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating...' : 'Create Campaign'}
-                </Button>
-              </DialogFooter>
-            </form>
+            <CampaignForm
+              mode="create"
+              onSubmit={onSubmit}
+              onCancel={handleDialogClose}
+              isSubmitting={isSubmitting}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -299,40 +259,13 @@ export default function CampaignsPage() {
               Update your campaign details.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-title">Campaign Title</Label>
-              <Input
-                id="edit-title"
-                placeholder="Enter campaign title"
-                {...register('title')}
-                disabled={isSubmitting}
-              />
-              {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-description">Description (Optional)</Label>
-              <Textarea
-                id="edit-description"
-                placeholder="Enter campaign description"
-                {...register('description')}
-                disabled={isSubmitting}
-              />
-              {errors.description && (
-                <p className="text-sm text-red-500">{errors.description.message}</p>
-              )}
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Updating...' : 'Update Campaign'}
-              </Button>
-            </DialogFooter>
-          </form>
+          <CampaignForm
+            mode="edit"
+            campaign={editingCampaign || undefined}
+            onSubmit={onSubmit}
+            onCancel={handleDialogClose}
+            isSubmitting={isSubmitting}
+          />
         </DialogContent>
       </Dialog>
     </div>
