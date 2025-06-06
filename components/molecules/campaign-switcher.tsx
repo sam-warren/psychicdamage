@@ -1,7 +1,7 @@
 "use client"
 
+import { ChevronsUpDown, Plus } from "lucide-react"
 import * as React from "react"
-import { ChevronsUpDown, Plus, Sword } from "lucide-react"
 
 import {
   DropdownMenu,
