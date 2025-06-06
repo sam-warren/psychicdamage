@@ -5,6 +5,9 @@ import {
   IconLoader,
   IconStar,
   IconTrash,
+  IconChevronDown,
+  IconChevronUp,
+  IconSelector,
 } from "@tabler/icons-react"
 
 import { DragHandle } from "@/components/molecules/drag-handle"
@@ -64,15 +67,49 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Name</span>
+        {column.getCanSort() && (
+          <div className="">
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
-      return <MonsterStatSheet monster={row.original} />
+      return (
+        <div className="w-24">
+          <MonsterStatSheet monster={row.original} />
+        </div>
+      )
     },
     enableHiding: false,
   },
   {
     accessorKey: "challenge_rating",
-    header: () => <div className="w-12 text-right">CR</div>,
+    header: ({ column }) => (
+      <div className="w-12 text-right flex items-center justify-end gap-2">
+        <span>CR</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="w-12 text-right font-medium">
         {row.original.challenge_rating ?? "-"}
@@ -81,7 +118,22 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "armor_class",
-    header: () => <div className="w-12 text-right">AC</div>,
+    header: ({ column }) => (
+      <div className="w-12 text-right flex items-center justify-end gap-2">
+        <span>AC</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="w-12 text-right font-medium">
         {row.original.armor_class ?? "-"}
@@ -90,7 +142,22 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "hit_points",
-    header: () => <div className="w-16 text-right">HP</div>,
+    header: ({ column }) => (
+      <div className="w-16 text-right flex items-center justify-end gap-2">
+        <span>HP</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="w-16 text-right font-medium">
         {row.original.hit_points ?? "-"}
@@ -99,7 +166,22 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: ({ column }) => (
+      <div className="w-20 flex items-center gap-2">
+        <span>Type</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
       const monsterType = row.original.type
       const validCreatureTypes: CreatureType[] = [
@@ -142,7 +224,22 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "size",
-    header: "Size",
+    header: ({ column }) => (
+      <div className="w-16 flex items-center gap-2">
+        <span>Size</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
       const monsterSize = row.original.size
       const validSizes: CreatureSize[] = [
@@ -179,7 +276,22 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "source",
-    header: "Source",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Source</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
       const isHomebrew = row.original.is_homebrew
       return (

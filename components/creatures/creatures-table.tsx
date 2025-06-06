@@ -246,7 +246,20 @@ export function CreaturesDataTable({ data: initialData }: { data: Monster[] }) {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
+                        <TableHead 
+                          key={header.id} 
+                          colSpan={header.colSpan}
+                          className={
+                            header.column.getCanSort()
+                              ? "cursor-pointer select-none hover:text-foreground"
+                              : ""
+                          }
+                          onClick={
+                            header.column.getCanSort()
+                              ? header.column.getToggleSortingHandler()
+                              : undefined
+                          }
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
