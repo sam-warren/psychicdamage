@@ -1,13 +1,13 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { campaignService } from '@/services/campaigns'
+import { CampaignActions } from '@/components/campaigns/campaign-actions'
+import { CreateCampaignDialog } from '@/components/campaigns/create-campaign-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, MoreHorizontal, Edit, Trash2, Users, Calendar, BookOpen } from 'lucide-react'
-import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { campaignService } from '@/services/campaigns'
 import { formatDistanceToNow } from 'date-fns'
-import { CreateCampaignDialog } from '@/components/campaigns/create-campaign-dialog'
-import { CampaignActions } from '@/components/campaigns/campaign-actions'
+import { BookOpen, Calendar, Users } from 'lucide-react'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export default async function CampaignsPage() {
   const supabase = await createClient()
@@ -17,7 +17,6 @@ export default async function CampaignsPage() {
     redirect('/auth/login')
   }
 
-  // Fetch campaigns server-side
   const campaigns = await campaignService.getCampaigns(data.user.id)
 
   return (

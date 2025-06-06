@@ -1,32 +1,30 @@
 "use client"
 
-import * as React from "react"
 import {
   BookOpen,
-  Sword,
-  Users,
-  Settings2,
   Home,
+  Settings2,
   Shield,
-  Plus,
+  Sword,
+  Users
 } from "lucide-react"
+import * as React from "react"
 
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog"
+import { CampaignSwitcher } from "@/components/molecules/campaign-switcher"
 import { NavMain } from "@/components/nav/nav-main"
 import { NavUser } from "@/components/nav/nav-user"
-import { CampaignSwitcher } from "@/components/molecules/campaign-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarMenu,
+  SidebarMenuItem,
+  SidebarRail
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { Tables } from "@/types/database"
-import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog"
 
 type Campaign = Tables<"campaigns">
 
