@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { campaignService } from '@/lib/campaigns'
+import { campaignService } from '@/services/campaigns'
 import { Tables } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -232,12 +232,12 @@ export default function CampaignsPage() {
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/campaigns/${campaign.id}`}>
+                      <Link href={`/campaigns/${campaign.id}`}>
                         View Details
                       </Link>
                     </Button>
                     <Button asChild size="sm">
-                      <Link href={`/dashboard/campaigns/${campaign.id}/players`}>
+                      <Link href={`/campaigns/${campaign.id}/players`}>
                         <Users className="h-4 w-4 mr-2" />
                         Manage
                       </Link>

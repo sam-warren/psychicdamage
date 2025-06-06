@@ -42,6 +42,25 @@ function extractHitPoints(hpString) {
   };
 }
 
+function parseSavingThrows(savingThrowString) {
+  if (!savingThrowString) return null;
+  
+  const throws = {};
+  const parts = savingThrowString.split(',');
+  
+  for (const part of parts) {
+    const trimmed = part.trim();
+    const match = trimmed.match(/(\w{3})\s*([\+\-]\d+)/i);
+    if (match) {
+      const ability = match[1].toLowerCase();
+      const bonus = match[2];
+      throws[ability] = bonus;
+    }
+  }
+  
+  return Object.keys(throws).length > 0 ? throws : null;
+}
+
 function escapeSQL(str) {
   if (!str) return 'NULL';
   return `'${str.replace(/'/g, "''")}'`;
@@ -62,6 +81,7 @@ function monsterToSQL(monster, isLast = false) {
   const { cr, xp } = parseChallengeRating(monster.challenge);
   const { hp, dice } = extractHitPoints(monster.hit_points);
   const ac = extractArmorClass(monster.armor_class);
+  const savingThrows = parseSavingThrows(monster.saving_throws);
   
   // Handle damage arrays
   const damageResistances = monster.damage_resistances ? 
@@ -70,6 +90,8 @@ function monsterToSQL(monster, isLast = false) {
     monster.damage_immunities.split(', ') : [];
   const conditionImmunities = monster.condition_immunities ? 
     monster.condition_immunities.split(', ') : [];
+  const damageVulnerabilities = monster.damage_vulnerabilities ? 
+    monster.damage_vulnerabilities.split(', ') : [];
 
   const sql = `-- ${monster.name} (CR ${monster.challenge})
 (
@@ -86,13 +108,13 @@ function monsterToSQL(monster, isLast = false) {
     ${arrayToSQL(damageResistances)},
     ${arrayToSQL(damageImmunities)},
     ${arrayToSQL(conditionImmunities)},
+    ${arrayToSQL(damageVulnerabilities)},
     ${escapeSQL(monster.senses)},
-    ${escapeSQL(monster.languages)},
     ${cr},
     ${xp},
     ${jsonToSQL(monster.actions || [])},
-    ${jsonToSQL(monster.legendary_actions || [])},
     ${jsonToSQL(monster.abilities || [])},
+    ${jsonToSQL(savingThrows)},
     'SRD 5.1',
     FALSE
 )${isLast ? ';' : ','}`
@@ -104,7 +126,7 @@ function convertJSONToSeed() {
   try {
     console.log('Converting JSON monsters to SQL seed format...');
     
-    const jsonPath = path.join(process.cwd(), 'legal', 'Monsters-SRD5.1-CCBY4.0License-TT.json');
+    const jsonPath = path.join(process.cwd(), 'data', 'Monsters-SRD5.1-CCBY4.0License-TT.json');
     const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     
     if (!jsonData.monsters || !Array.isArray(jsonData.monsters)) {
@@ -134,13 +156,13 @@ INSERT INTO monsters (
     damage_resistances,
     damage_immunities,
     condition_immunities,
+    damage_vulnerabilities,
     senses,
-    languages,
     challenge_rating,
     xp,
     actions,
-    legendary_actions,
     special_abilities,
+    saving_throws,
     source,
     is_homebrew
 ) VALUES 
