@@ -1,20 +1,22 @@
 import * as React from "react"
-import { 
-  AbilityBadge, 
-  ConditionBadge, 
-  DamageBadge, 
-  MagicSchoolBadge, 
+import {
+  AbilityBadge,
+  ConditionBadge,
+  DamageBadge,
+  MagicSchoolBadge,
   CreatureTypeBadge,
-  SizeBadge
+  SizeBadge,
+  AlignmentBadge,
 } from "./index"
-import { 
-  DndBadgeType, 
-  AbilityScore, 
-  Condition, 
-  DamageType, 
-  MagicSchool, 
+import {
+  DndBadgeType,
+  AbilityScore,
+  Condition,
+  DamageType,
+  MagicSchool,
   CreatureType,
-  CreatureSize
+  CreatureSize,
+  Alignment,
 } from "./types"
 
 export interface DndBadgeProps {
@@ -24,36 +26,105 @@ export interface DndBadgeProps {
   className?: string
 }
 
-export function DndBadge({ badgeType, value, showLabel = true, className, ...props }: DndBadgeProps) {
+export function DndBadge({
+  badgeType,
+  value,
+  showLabel = true,
+  className,
+  ...props
+}: DndBadgeProps) {
   // Type guards to determine which specific badge to use
-  const isAbilityScore = (type: DndBadgeType): type is AbilityScore => 
+  const isAbilityScore = (type: DndBadgeType): type is AbilityScore =>
     ["str", "dex", "con", "int", "wis", "cha"].includes(type)
-  
-  const isCondition = (type: DndBadgeType): type is Condition => 
-    ["blinded", "charmed", "deafened", "exhaustion", "frightened", "grappled", 
-     "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", 
-     "prone", "restrained", "stunned", "unconscious"].includes(type)
-  
-  const isDamageType = (type: DndBadgeType): type is DamageType => 
-    ["acid", "cold", "fire", "force", "lightning", "necrotic", "poison", 
-     "psychic", "radiant", "thunder", "bludgeoning", "piercing", "slashing"].includes(type)
-  
-  const isMagicSchool = (type: DndBadgeType): type is MagicSchool => 
-    ["abjuration", "conjuration", "divination", "enchantment", "evocation", 
-     "illusion", "necromancy", "transmutation"].includes(type)
-  
-  const isCreatureType = (type: DndBadgeType): type is CreatureType => 
-    ["aberration", "beast", "celestial", "construct", "dragon", "elemental", 
-     "fey", "fiend", "giant", "humanoid", "monstrosity", "ooze", "plant", "undead"].includes(type)
-  
-  const isCreatureSize = (type: DndBadgeType): type is CreatureSize => 
+
+  const isCondition = (type: DndBadgeType): type is Condition =>
+    [
+      "blinded",
+      "charmed",
+      "deafened",
+      "exhaustion",
+      "frightened",
+      "grappled",
+      "incapacitated",
+      "invisible",
+      "paralyzed",
+      "petrified",
+      "poisoned",
+      "prone",
+      "restrained",
+      "stunned",
+      "unconscious",
+    ].includes(type)
+
+  const isDamageType = (type: DndBadgeType): type is DamageType =>
+    [
+      "acid",
+      "cold",
+      "fire",
+      "force",
+      "lightning",
+      "necrotic",
+      "poison",
+      "psychic",
+      "radiant",
+      "thunder",
+      "bludgeoning",
+      "piercing",
+      "slashing",
+    ].includes(type)
+
+  const isMagicSchool = (type: DndBadgeType): type is MagicSchool =>
+    [
+      "abjuration",
+      "conjuration",
+      "divination",
+      "enchantment",
+      "evocation",
+      "illusion",
+      "necromancy",
+      "transmutation",
+    ].includes(type)
+
+  const isCreatureType = (type: DndBadgeType): type is CreatureType =>
+    [
+      "aberration",
+      "beast",
+      "celestial",
+      "construct",
+      "dragon",
+      "elemental",
+      "fey",
+      "fiend",
+      "giant",
+      "humanoid",
+      "monstrosity",
+      "ooze",
+      "plant",
+      "undead",
+    ].includes(type)
+
+  const isCreatureSize = (type: DndBadgeType): type is CreatureSize =>
     ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"].includes(type)
+
+  const isAlignment = (type: DndBadgeType): type is Alignment =>
+    [
+      "lawful good",
+      "neutral good",
+      "chaotic good",
+      "lawful neutral",
+      "true neutral",
+      "chaotic neutral",
+      "lawful evil",
+      "neutral evil",
+      "chaotic evil",
+      "unaligned",
+    ].includes(type)
 
   // Route to appropriate badge component
   if (isAbilityScore(badgeType)) {
     return (
-      <AbilityBadge 
-        ability={badgeType} 
+      <AbilityBadge
+        ability={badgeType}
         modifier={typeof value === "number" ? value : undefined}
         showLabel={showLabel}
         className={className}
@@ -61,10 +132,10 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
       />
     )
   }
-  
+
   if (isCondition(badgeType)) {
     return (
-      <ConditionBadge 
+      <ConditionBadge
         condition={badgeType}
         showLabel={showLabel}
         className={className}
@@ -72,10 +143,10 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
       />
     )
   }
-  
+
   if (isDamageType(badgeType)) {
     return (
-      <DamageBadge 
+      <DamageBadge
         damageType={badgeType}
         amount={value}
         showLabel={showLabel}
@@ -84,10 +155,10 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
       />
     )
   }
-  
+
   if (isMagicSchool(badgeType)) {
     return (
-      <MagicSchoolBadge 
+      <MagicSchoolBadge
         school={badgeType}
         level={typeof value === "number" ? value : undefined}
         showLabel={showLabel}
@@ -96,10 +167,10 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
       />
     )
   }
-  
+
   if (isCreatureType(badgeType)) {
     return (
-      <CreatureTypeBadge 
+      <CreatureTypeBadge
         creatureType={badgeType}
         showLabel={showLabel}
         className={className}
@@ -107,10 +178,10 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
       />
     )
   }
-  
+
   if (isCreatureSize(badgeType)) {
     return (
-      <SizeBadge 
+      <SizeBadge
         size={badgeType}
         showFullLabel={showLabel}
         className={className}
@@ -119,6 +190,16 @@ export function DndBadge({ badgeType, value, showLabel = true, className, ...pro
     )
   }
 
+  if (isAlignment(badgeType)) {
+    return (
+      <AlignmentBadge
+        alignment={badgeType}
+        showFullLabel={showLabel}
+        className={className}
+        {...props}
+      />
+    )
+  }
   // Fallback - shouldn't happen with proper typing
   return null
-} 
+}

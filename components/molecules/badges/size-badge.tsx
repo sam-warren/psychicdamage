@@ -9,12 +9,12 @@ const sizeBadgeVariants = cva(
   {
     variants: {
       size: {
-        Tiny: "bg-stone-100 text-black border-stone-200",
-        Small: "bg-stone-300 text-black border-stone-400",
-        Medium: "bg-stone-500 text-white border-stone-600",
-        Large: "bg-stone-700 text-white border-stone-800",
-        Huge: "bg-stone-800 text-white border-stone-900",  
-        Gargantuan: "bg-stone-900 text-white border-stone-900",
+        Tiny: "bg-stone-900 text-white border-stone-900",
+        Small: "bg-stone-800 text-white border-stone-900",
+        Medium: "bg-stone-700 text-white border-stone-800",
+        Large: "bg-stone-500 text-white border-stone-600",
+        Huge: "bg-stone-300 text-black border-stone-400",
+        Gargantuan: "bg-stone-100 text-black border-stone-200",
       },
     },
     defaultVariants: {
@@ -73,4 +73,4 @@ export function SizeBadge({
       {showFullLabel ? label : abbreviation}
     </Badge>
   )
-} 
+}

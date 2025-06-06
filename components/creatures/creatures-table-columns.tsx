@@ -208,7 +208,7 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
           {isValidCreatureType ? (
             <DndBadge
               badgeType={monsterType as DndBadgeType}
-              className="text-muted-foreground px-1.5 capitalize"
+              className="text-muted-foreground px-1.5"
             />
           ) : (
             <Badge
@@ -252,8 +252,6 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
       ]
       const isValidSize =
         monsterSize && validSizes.includes(monsterSize as CreatureSize)
-      console.log("monsterSize", monsterSize)
-      console.log("isValidSize", isValidSize)
 
       return (
         <div className="w-16">

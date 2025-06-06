@@ -5,24 +5,24 @@ import { cn } from "@/lib/utils"
 import { CreatureType } from "./types"
 
 const creatureTypeBadgeVariants = cva(
-  "inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 capitalize tracking-wide",
+  "inline-flex items-center justify-center px-3 py-1 text-xs font-bold w-fit whitespace-nowrap shrink-0 gap-1 uppercase tracking-wide border shadow-lg",
   {
     variants: {
       creatureType: {
-        aberration: "border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-        beast: "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/30 dark:text-green-300",
-        celestial: "border-yellow-200 bg-yellow-100 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-        construct: "border-stone-200 bg-stone-100 text-stone-800 dark:border-stone-800 dark:bg-stone-900/30 dark:text-stone-300",
-        dragon: "border-red-200 bg-red-100 text-red-800 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300",
-        elemental: "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-        fey: "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-        fiend: "border-red-200 bg-red-100 text-red-800 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300",
-        giant: "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
-        humanoid: "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-        monstrosity: "border-violet-200 bg-violet-100 text-violet-800 dark:border-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
-        ooze: "border-lime-200 bg-lime-100 text-lime-800 dark:border-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
-        plant: "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/30 dark:text-green-300",
-        undead: "border-gray-200 bg-gray-100 text-gray-800 dark:border-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
+        aberration: "border-purple-100 bg-purple-100 text-white dark:border-purple-900 dark:bg-purple-900 dark:text-white",
+        beast: "border-green-100 bg-green-100 text-white dark:border-green-900 dark:bg-green-900 dark:text-white",
+        celestial: "border-yellow-100 bg-yellow-100 text-white dark:border-yellow-900 dark:bg-yellow-900 dark:text-white",
+        construct: "border-stone-100 bg-stone-100 text-white dark:border-stone-900 dark:bg-stone-900 dark:text-white",
+        dragon: "border-red-100 bg-red-100 text-white dark:border-red-900 dark:bg-red-900 dark:text-white",
+        elemental: "border-blue-100 bg-blue-100 text-white dark:border-blue-900 dark:bg-blue-900 dark:text-white",
+        fey: "border-emerald-100 bg-emerald-100 text-white dark:border-emerald-900 dark:bg-emerald-900 dark:text-white",
+        fiend: "border-red-100 bg-red-100 text-white dark:border-red-900 dark:bg-red-900 dark:text-white",
+        giant: "border-orange-100 bg-orange-100 text-white dark:border-orange-900 dark:bg-orange-900 dark:text-white",
+        humanoid: "border-blue-100 bg-blue-100 text-white dark:border-blue-900 dark:bg-blue-900 dark:text-white",
+        monstrosity: "border-violet-100 bg-violet-100 text-white dark:border-violet-900 dark:bg-violet-900 dark:text-white",
+        ooze: "border-lime-100 bg-lime-100 text-white dark:border-lime-900 dark:bg-lime-900 dark:text-white",
+        plant: "border-green-100 bg-green-100 text-white dark:border-green-900 dark:bg-green-900 dark:text-white",
+        undead: "border-gray-100 bg-gray-100 text-white dark:border-gray-900 dark:bg-gray-900 dark:text-white",
       },
     },
     defaultVariants: {

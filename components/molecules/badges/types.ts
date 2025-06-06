@@ -72,10 +72,24 @@ export type CreatureSize =
   | "Huge"
   | "Gargantuan"
 
+// D&D Alignments
+export type Alignment =
+  | "lawful good"
+  | "neutral good"
+  | "chaotic good"
+  | "lawful neutral"
+  | "true neutral"
+  | "chaotic neutral"
+  | "lawful evil"
+  | "neutral evil"
+  | "chaotic evil"
+  | "unaligned"
+
 export type DndBadgeType =
   | AbilityScore
   | Condition
   | DamageType
   | MagicSchool
   | CreatureType
-  | CreatureSize 
+  | CreatureSize
+  | Alignment 

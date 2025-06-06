@@ -9,6 +9,12 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Tables } from "@/types/database"
+import { DndBadge } from "../molecules/badges/dnd-badge"
+import {
+  Alignment,
+  CreatureSize,
+  CreatureType,
+} from "../molecules/badges/types"
 
 type Monster = Tables<"monsters">
 
@@ -67,14 +73,25 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
           {monster.name}
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="max-w-5xl mx-auto">
+      <DrawerContent className="max-w-5xl mx-auto px-4">
         <DrawerHeader className="gap-1">
           <DrawerTitle className="text-2xl font-bold">
             {monster.name}
           </DrawerTitle>
           <DrawerDescription className="text-base">
-            {monster.size} {monster.type}
-            {monster.subtype && ` (${monster.subtype})`}, {monster.alignment}
+            <DndBadge
+              badgeType={monster.type as CreatureType}
+              className="mr-2"
+            />
+            <DndBadge
+              badgeType={monster.size as CreatureSize}
+              className="mr-2"
+            />
+            <DndBadge
+              badgeType={monster.alignment as Alignment}
+              className="mr-2"
+            />
+            {monster.subtype && ` (${monster.subtype})`}
           </DrawerDescription>
         </DrawerHeader>
 
@@ -223,8 +240,8 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
                         <Badge>
                           <strong>Attack:</strong> {action.to_hit} to hit,
                           <strong>Reach:</strong> {action.reach || "5 ft."} |{" "}
-                          <strong>Damage:</strong>{" "}
-                          {action.damage_dice} {action.damage_type}
+                          <strong>Damage:</strong> {action.damage_dice}{" "}
+                          {action.damage_type}
                           {action.extra_damage_dice &&
                             ` + ${action.extra_damage_dice} ${action.extra_damage_type}`}
                         </Badge>
