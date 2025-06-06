@@ -4,6 +4,7 @@ import { ChevronsUpDown, Ellipsis, Plus } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +20,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog";
 
 export function CampaignSwitcher({
   campaigns,
@@ -99,7 +99,10 @@ export function CampaignSwitcher({
             </DropdownMenuItem>
             <CreateCampaignDialog
               trigger={
-                <DropdownMenuItem className="gap-2 p-2">
+                <DropdownMenuItem 
+                  className="gap-2 p-2"
+                  onSelect={(e) => e.preventDefault()}
+                >
                   <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                     <Plus className="size-4" />
                   </div>
