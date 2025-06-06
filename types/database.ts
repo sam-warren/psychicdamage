@@ -251,6 +251,7 @@ export type Database = {
           created_by: string | null
           damage_immunities: string[] | null
           damage_resistances: string[] | null
+          damage_vulnerabilities: string[] | null
           hit_dice: string | null
           hit_points: number | null
           id: string
@@ -279,6 +280,7 @@ export type Database = {
           created_by?: string | null
           damage_immunities?: string[] | null
           damage_resistances?: string[] | null
+          damage_vulnerabilities?: string[] | null
           hit_dice?: string | null
           hit_points?: number | null
           id?: string
@@ -307,6 +309,7 @@ export type Database = {
           created_by?: string | null
           damage_immunities?: string[] | null
           damage_resistances?: string[] | null
+          damage_vulnerabilities?: string[] | null
           hit_dice?: string | null
           hit_points?: number | null
           id?: string

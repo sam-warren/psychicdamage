@@ -1,28 +1,37 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table"
 import {
   IconCircleCheckFilled,
   IconDotsVertical,
   IconLoader,
   IconStar,
   IconTrash,
-} from "@tabler/icons-react";
+  IconChevronDown,
+  IconChevronUp,
+  IconSelector,
+} from "@tabler/icons-react"
 
-import { DragHandle } from "@/components/molecules/drag-handle";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { DragHandle } from "@/components/molecules/drag-handle"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tables } from "@/types/database";
+} from "@/components/ui/dropdown-menu"
+import { Tables } from "@/types/database"
 
-import { MonsterStatSheet } from "./monster-stat-sheet";
+import { MonsterStatSheet } from "./monster-stat-sheet"
+import {
+  DndBadge,
+  DndBadgeType,
+  CreatureType,
+  CreatureSize,
+} from "../molecules/badges"
 
-type Monster = Tables<"monsters">;
+type Monster = Tables<"monsters">
 
 export const creaturesTableColumns: ColumnDef<Monster>[] = [
   {
@@ -58,70 +67,231 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Name</span>
+        {column.getCanSort() && (
+          <div className="">
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
-      return <MonsterStatSheet monster={row.original} />;
+      return (
+        <div className="w-24">
+          <MonsterStatSheet monster={row.original} />
+        </div>
+      )
     },
     enableHiding: false,
   },
   {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => (
-      <div className="w-32">
-        <Badge
-          variant="outline"
-          className="text-muted-foreground px-1.5 capitalize"
-        >
-          {row.original.type || "Unknown"}
-        </Badge>
+    accessorKey: "challenge_rating",
+    header: ({ column }) => (
+      <div className="w-12 text-right flex items-center justify-end gap-2">
+        <span>CR</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
       </div>
     ),
-  },
-  {
-    accessorKey: "size",
-    header: "Size",
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="text-muted-foreground px-1.5 capitalize"
-      >
-        {row.original.size || "Unknown"}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: "challenge_rating",
-    header: () => <div className="w-full text-right">CR</div>,
-    cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-12 text-right font-medium">
         {row.original.challenge_rating ?? "-"}
       </div>
     ),
   },
   {
     accessorKey: "armor_class",
-    header: () => <div className="w-full text-right">AC</div>,
+    header: ({ column }) => (
+      <div className="w-12 text-right flex items-center justify-end gap-2">
+        <span>AC</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-12 text-right font-medium">
         {row.original.armor_class ?? "-"}
       </div>
     ),
   },
   {
     accessorKey: "hit_points",
-    header: () => <div className="w-full text-right">HP</div>,
+    header: ({ column }) => (
+      <div className="w-16 text-right flex items-center justify-end gap-2">
+        <span>HP</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => (
-      <div className="text-right font-medium">
+      <div className="w-16 text-right font-medium">
         {row.original.hit_points ?? "-"}
       </div>
     ),
   },
   {
-    accessorKey: "source",
-    header: "Source",
+    accessorKey: "type",
+    header: ({ column }) => (
+      <div className="w-20 flex items-center gap-2">
+        <span>Type</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
     cell: ({ row }) => {
-      const isHomebrew = row.original.is_homebrew;
+      const monsterType = row.original.type
+      const validCreatureTypes: CreatureType[] = [
+        "aberration",
+        "beast",
+        "celestial",
+        "construct",
+        "dragon",
+        "elemental",
+        "fey",
+        "fiend",
+        "giant",
+        "humanoid",
+        "monstrosity",
+        "ooze",
+        "plant",
+        "undead",
+      ]
+      const isValidCreatureType =
+        monsterType && validCreatureTypes.includes(monsterType as CreatureType)
+
+      return (
+        <div className="w-20 flex items-center gap-2">
+          {isValidCreatureType ? (
+            <DndBadge
+              badgeType={monsterType as DndBadgeType}
+              className="text-muted-foreground px-1.5"
+            />
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-muted-foreground px-1.5 capitalize"
+            >
+              {monsterType || "Unknown"}
+            </Badge>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "size",
+    header: ({ column }) => (
+      <div className="w-16 flex items-center gap-2">
+        <span>Size</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
+    cell: ({ row }) => {
+      const monsterSize = row.original.size
+      const validSizes: CreatureSize[] = [
+        "Tiny",
+        "Small",
+        "Medium",
+        "Large",
+        "Huge",
+        "Gargantuan",
+      ]
+      const isValidSize =
+        monsterSize && validSizes.includes(monsterSize as CreatureSize)
+
+      return (
+        <div className="w-16">
+          {isValidSize ? (
+            <DndBadge
+              badgeType={monsterSize as DndBadgeType}
+              showLabel={true}
+            />
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-muted-foreground px-1.5 capitalize"
+            >
+              {monsterSize || "Unknown"}
+            </Badge>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "source",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Source</span>
+        {column.getCanSort() && (
+          <div>
+            {column.getIsSorted() === "desc" ? (
+              <IconChevronDown className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <IconChevronUp className="h-4 w-4" />
+            ) : (
+              <IconSelector className="h-4 w-4 opacity-50" />
+            )}
+          </div>
+        )}
+      </div>
+    ),
+    cell: ({ row }) => {
+      const isHomebrew = row.original.is_homebrew
       return (
         <Badge
           variant={isHomebrew ? "default" : "secondary"}
@@ -134,7 +304,7 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
           )}
           {row.original.source || "Unknown"}
         </Badge>
-      );
+      )
     },
   },
   {
@@ -169,4 +339,4 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
       </DropdownMenu>
     ),
   },
-];
+]
