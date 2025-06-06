@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -16,14 +17,15 @@ import {
   type CampaignFormData,
 } from "@/components/forms/campaign-form"
 import { createCampaign } from "@/actions/campaigns"
-import { SidebarMenu, SidebarMenuButton } from "../ui/sidebar"
 
 interface CreateCampaignDialogProps {
   triggerText?: string
+  trigger?: React.ReactNode
 }
 
 export function CreateCampaignDialog({
   triggerText = "New Campaign",
+  trigger,
 }: CreateCampaignDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -40,15 +42,17 @@ export function CreateCampaignDialog({
     })
   }
 
+  const defaultTrigger = (
+    <Button variant="outline">
+      <Plus className="h-4 w-4" />
+      {triggerText}
+    </Button>
+  )
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <SidebarMenu>
-          <SidebarMenuButton>
-            <Plus className="h-4 w-4" />
-            {triggerText}
-          </SidebarMenuButton>
-        </SidebarMenu>
+        {trigger || defaultTrigger}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

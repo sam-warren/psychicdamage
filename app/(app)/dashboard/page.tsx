@@ -99,7 +99,7 @@ export default async function DashboardPage() {
               </div>
               <Button asChild size="sm">
                 <Link href="/campaigns">
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4" />
                   New Campaign
                 </Link>
               </Button>

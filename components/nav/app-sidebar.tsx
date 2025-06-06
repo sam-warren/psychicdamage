@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   BookOpen,
@@ -6,27 +6,29 @@ import {
   Settings2,
   Shield,
   Sword,
-  Users
-} from "lucide-react"
-import * as React from "react"
+  Users,
+  Plus,
+} from "lucide-react";
+import * as React from "react";
 
-import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog"
-import { CampaignSwitcher } from "@/components/molecules/campaign-switcher"
-import { NavMain } from "@/components/nav/nav-main"
-import { NavUser } from "@/components/nav/nav-user"
+import { CreateCampaignDialog } from "@/components/campaigns/create-campaign-dialog";
+import { CampaignSwitcher } from "@/components/molecules/campaign-switcher";
+import { NavMain } from "@/components/nav/nav-main";
+import { NavUser } from "@/components/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
-} from "@/components/ui/sidebar"
-import { useAuth } from "@/hooks/use-auth"
-import { Tables } from "@/types/database"
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use-auth";
+import { Tables } from "@/types/database";
 
-type Campaign = Tables<"campaigns">
+type Campaign = Tables<"campaigns">;
 
 const navMain = [
   {
@@ -115,38 +117,46 @@ const navMain = [
       },
     ],
   },
-]
+];
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  campaigns: Campaign[]
+  campaigns: Campaign[];
 }
 
 export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const userData = {
     name:
       user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User",
     email: user?.email || "user@example.com",
     avatar: user?.user_metadata?.avatar_url || "",
-  }
+  };
 
   const campaignData = campaigns.map((campaign) => ({
     id: campaign.id,
     name: campaign.title,
     description: campaign.description || "",
     icon: Shield,
-  }))
+  }));
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         {campaignData.length > 0 ? (
           <CampaignSwitcher campaigns={campaignData} />
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-              <CreateCampaignDialog triggerText="New Campaign" />
+              <CreateCampaignDialog
+                triggerText="New Campaign"
+                trigger={
+                  <SidebarMenuButton>
+                    <Plus className="h-4 w-4" />
+                    New Campaign
+                  </SidebarMenuButton>
+                }
+              />
             </SidebarMenuItem>
           </SidebarMenu>
         )}
@@ -159,5 +169,5 @@ export function AppSidebar({ campaigns, ...props }: AppSidebarProps) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
