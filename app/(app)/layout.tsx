@@ -28,8 +28,15 @@ export default async function DashboardLayout({
     redirect("/auth/login");
   }
 
-  // Fetch campaigns server-side
-  const campaigns = await campaignService.getCampaigns(data.user.id);
+  // Fetch campaigns server-side with error handling
+  let campaigns: Awaited<ReturnType<typeof campaignService.getCampaigns>> = [];
+  try {
+    campaigns = await campaignService.getCampaigns(data.user.id);
+  } catch (error) {
+    console.error('Failed to load campaigns in layout:', error);
+    // Continue with empty campaigns array to prevent layout crash
+    campaigns = [];
+  }
 
   
   return (
