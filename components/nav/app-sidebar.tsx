@@ -35,7 +35,6 @@ const navMain = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
-    isActive: true,
   },
   {
     title: "Campaign Tools",
