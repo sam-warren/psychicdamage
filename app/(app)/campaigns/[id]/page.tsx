@@ -1,3 +1,8 @@
-export default function CampaignPage({ params }: { params: { id: string } }) {
-  return <div>Campaign Page {params.id}</div>;
+export default async function CampaignPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  const { id } = await params;
+  return <div>Campaign Page {id}</div>;
 }
