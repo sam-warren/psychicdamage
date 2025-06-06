@@ -7,11 +7,8 @@ import {
   Users,
   Settings2,
   Home,
-  Dice6,
-  Scroll,
   Shield,
   Plus,
-  ChevronRight,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav/nav-main"
@@ -25,30 +22,19 @@ import {
   SidebarRail,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarGroup,
   SidebarMenu,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { campaignService } from "@/lib/campaigns"
 import { Tables } from "@/types/database"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
 import {
@@ -56,11 +42,6 @@ import {
   campaignSchema,
   type CampaignFormData,
 } from "@/components/forms/campaign-form"
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible"
 
 type CampaignForm = z.infer<typeof campaignSchema>
 type Campaign = Tables<"campaigns">
