@@ -32,7 +32,6 @@ export default async function DashboardLayout({
   const campaigns = await campaignService.getCampaigns(data.user.id);
 
   
-  
   return (
     <SidebarProvider>
       <AppSidebar campaigns={campaigns} />

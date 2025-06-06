@@ -1,18 +1,30 @@
-'use client'
+"use client"
 
-import { useState, useTransition } from 'react'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Plus } from 'lucide-react'
-import { toast } from 'sonner'
-import { CampaignForm, type CampaignFormData } from '@/components/forms/campaign-form'
-import { createCampaign } from '@/actions/campaigns'
+import { useState, useTransition } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Plus } from "lucide-react"
+import { toast } from "sonner"
+import {
+  CampaignForm,
+  type CampaignFormData,
+} from "@/components/forms/campaign-form"
+import { createCampaign } from "@/actions/campaigns"
+import { SidebarMenu, SidebarMenuButton } from "../ui/sidebar"
 
 interface CreateCampaignDialogProps {
   triggerText?: string
 }
 
-export function CreateCampaignDialog({ triggerText = "New Campaign" }: CreateCampaignDialogProps) {
+export function CreateCampaignDialog({
+  triggerText = "New Campaign",
+}: CreateCampaignDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -21,9 +33,9 @@ export function CreateCampaignDialog({ triggerText = "New Campaign" }: CreateCam
       try {
         await createCampaign(data)
         setIsOpen(false)
-        toast.success('Campaign created successfully')
+        toast.success("Campaign created successfully")
       } catch {
-        toast.error('Error creating campaign')
+        toast.error("Error creating campaign")
       }
     })
   }
@@ -31,10 +43,12 @@ export function CreateCampaignDialog({ triggerText = "New Campaign" }: CreateCam
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          <Plus className="h-4 w-4" />
-          {triggerText}
-        </Button>
+        <SidebarMenu>
+          <SidebarMenuButton>
+            <Plus className="h-4 w-4" />
+            {triggerText}
+          </SidebarMenuButton>
+        </SidebarMenu>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -52,4 +66,4 @@ export function CreateCampaignDialog({ triggerText = "New Campaign" }: CreateCam
       </DialogContent>
     </Dialog>
   )
-} 
+}

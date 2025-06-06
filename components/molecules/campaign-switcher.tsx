@@ -32,28 +32,6 @@ export function CampaignSwitcher({
   const { isMobile } = useSidebar()
   const [activeCampaign, setActiveCampaign] = React.useState(campaigns[0])
 
-  // If no campaigns, show a default state
-  if (!activeCampaign && campaigns.length === 0) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
-            <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-              <Sword className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">No Campaigns</span>
-              <span className="truncate text-xs text-muted-foreground">Create your first campaign</span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    )
-  }
-
   if (!activeCampaign) {
     return null
   }
@@ -71,8 +49,12 @@ export function CampaignSwitcher({
                 <activeCampaign.icon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeCampaign.name}</span>
-                <span className="truncate text-xs text-muted-foreground">{activeCampaign.description}</span>
+                <span className="truncate font-medium">
+                  {activeCampaign.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {activeCampaign.description}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -97,7 +79,9 @@ export function CampaignSwitcher({
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{campaign.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">{campaign.description}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {campaign.description}
+                  </span>
                 </div>
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
@@ -115,4 +99,4 @@ export function CampaignSwitcher({
       </SidebarMenuItem>
     </SidebarMenu>
   )
-} 
+}
