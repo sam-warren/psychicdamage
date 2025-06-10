@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tables } from "@/types/database"
 
-import { MonsterStatSheet } from "./monster-stat-sheet"
+import { CreatureDrawer } from "./creature/components/drawer"
 import {
   DndBadge,
   DndBadgeType,
@@ -86,7 +86,7 @@ export const creaturesTableColumns: ColumnDef<Monster>[] = [
     cell: ({ row }) => {
       return (
         <div className="w-24">
-          <MonsterStatSheet monster={row.original} />
+          <CreatureDrawer creature={row.original} />
         </div>
       )
     },

@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Drawer,
   DrawerContent,
@@ -14,7 +15,16 @@ import {
   Alignment,
   CreatureSize,
   CreatureType,
+  AbilityScore,
 } from "../molecules/badges/types"
+import {
+  formatAbilityScore,
+  formatDice,
+  formatMovementText,
+  formatNumber,
+  formatSkillsText,
+  formatSensesText,
+} from "@/lib/utils/monster-formatting"
 
 type Monster = Tables<"monsters">
 
@@ -23,12 +33,6 @@ interface MonsterStatSheetProps {
 }
 
 export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
-  // Helper function to format ability scores
-  const formatAbilityScore = (score: number) => {
-    const modifier = Math.floor((score - 10) / 2)
-    return `${score} (${modifier >= 0 ? "+" : ""}${modifier})`
-  }
-
   // Parse JSON fields safely based on actual database structure
   const abilityScores = (monster.ability_scores as Record<string, string>) || {}
   const skills = (monster.skills as { raw?: string }) || {}
@@ -80,11 +84,11 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
           </DrawerTitle>
           <DrawerDescription className="text-base">
             <DndBadge
-              badgeType={monster.type as CreatureType}
+              badgeType={monster.size as CreatureSize}
               className="mr-2"
             />
             <DndBadge
-              badgeType={monster.size as CreatureSize}
+              badgeType={monster.type as CreatureType}
               className="mr-2"
             />
             <DndBadge
@@ -102,17 +106,36 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <h3 className="font-semibold text-foreground border-b border-border pb-1 mb-2">
                 BASIC STATS
               </h3>
-              <div className="space-y-1">
-                <div>
-                  <strong>Armor Class:</strong> {monster.armor_class || "—"}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <strong className="text-foreground">Armor Class:</strong>
+                  {monster.armor_class
+                    ? formatNumber(monster.armor_class)
+                    : "—"}
                 </div>
-                <div>
-                  <strong>Hit Points:</strong> {monster.hit_points || "—"}{" "}
-                  {monster.hit_dice && `(${monster.hit_dice})`}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <strong className="text-foreground">Hit Points:</strong>
+                  {monster.hit_points ? formatNumber(monster.hit_points) : "—"}
+                  {monster.hit_dice && (
+                    <span className="ml-1">{formatDice(monster.hit_dice)}</span>
+                  )}
                 </div>
-                <div>
-                  <strong>Challenge Rating:</strong>{" "}
-                  {monster.challenge_rating || "—"} ({monster.xp || "—"} XP)
+                <div className="flex items-center gap-2 flex-wrap">
+                  <strong className="text-foreground">Challenge Rating:</strong>
+                  {monster.challenge_rating
+                    ? formatNumber(monster.challenge_rating)
+                    : "—"}
+                  <span className="text-muted-foreground">
+                    (
+                    {monster.xp ? (
+                      <span className="font-mono text-foreground">
+                        {monster.xp}
+                      </span>
+                    ) : (
+                      "—"
+                    )}{" "}
+                    XP)
+                  </span>
                 </div>
               </div>
             </div>
@@ -122,7 +145,15 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
                 MOVEMENT
               </h3>
               <div className="space-y-1">
-                {speed.raw ? <div>{speed.raw}</div> : <div>—</div>}
+                {speed.raw ? (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: formatMovementText(speed.raw),
+                    }}
+                  />
+                ) : (
+                  <div>—</div>
+                )}
               </div>
             </div>
           </div>
@@ -136,9 +167,16 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               {["STR", "DEX", "CON", "INT", "WIS", "CHA"].map((ability) => {
                 const score =
                   parseInt(abilityScores[ability.toLowerCase()]) || 10
+
                 return (
-                  <div key={ability} className="border rounded p-2">
-                    <div className="font-semibold text-xs">{ability}</div>
+                  <div
+                    key={ability}
+                    className="border border-border rounded p-2 bg-card"
+                  >
+                    <DndBadge
+                      badgeType={ability.toLowerCase() as AbilityScore}
+                      className="mb-1"
+                    />
                     <div className="text-sm">{formatAbilityScore(score)}</div>
                   </div>
                 )
@@ -158,48 +196,77 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <h3 className="font-semibold text-foreground border-b border-border pb-1 mb-2">
                 DEFENSES & SENSES
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {skills.raw && (
                   <div>
-                    <strong>Skills:</strong> {skills.raw}
+                    <strong className="text-foreground">Skills:</strong>
+                    <span
+                      className="ml-1"
+                      dangerouslySetInnerHTML={{
+                        __html: formatSkillsText(skills.raw),
+                      }}
+                    />
                   </div>
                 )}
                 {monster.damage_resistances &&
                   monster.damage_resistances.length > 0 && (
                     <div>
-                      <strong>Damage Resistances:</strong>{" "}
-                      {monster.damage_resistances.join(", ")}
+                      <strong className="text-foreground">
+                        Damage Resistances:
+                      </strong>{" "}
+                      <span className="text-foreground">
+                        {monster.damage_resistances.join(", ")}
+                      </span>
                     </div>
                   )}
                 {monster.damage_immunities &&
                   monster.damage_immunities.length > 0 && (
                     <div>
-                      <strong>Damage Immunities:</strong>{" "}
-                      {monster.damage_immunities.join(", ")}
+                      <strong className="text-foreground">
+                        Damage Immunities:
+                      </strong>{" "}
+                      <span className="text-foreground">
+                        {monster.damage_immunities.join(", ")}
+                      </span>
                     </div>
                   )}
                 {monster.condition_immunities &&
                   monster.condition_immunities.length > 0 && (
                     <div>
-                      <strong>Condition Immunities:</strong>{" "}
-                      {monster.condition_immunities.join(", ")}
+                      <strong className="text-foreground">
+                        Condition Immunities:
+                      </strong>{" "}
+                      <span className="text-foreground">
+                        {monster.condition_immunities.join(", ")}
+                      </span>
                     </div>
                   )}
                 {monster.damage_vulnerabilities &&
                   monster.damage_vulnerabilities.length > 0 && (
                     <div>
-                      <strong>Damage Vulnerabilities:</strong>{" "}
-                      {monster.damage_vulnerabilities.join(", ")}
+                      <strong className="text-foreground">
+                        Damage Vulnerabilities:
+                      </strong>{" "}
+                      <span className="text-foreground">
+                        {monster.damage_vulnerabilities.join(", ")}
+                      </span>
                     </div>
                   )}
                 {monster.senses && (
                   <div>
-                    <strong>Senses:</strong> {monster.senses}
+                    <strong className="text-foreground">Senses:</strong>
+                    <span
+                      className="ml-1"
+                      dangerouslySetInnerHTML={{
+                        __html: formatSensesText(monster.senses),
+                      }}
+                    />
                   </div>
                 )}
                 {monster.languages && (
                   <div>
-                    <strong>Languages:</strong> {monster.languages}
+                    <strong className="text-foreground">Languages:</strong>{" "}
+                    <span className="text-foreground">{monster.languages}</span>
                   </div>
                 )}
               </div>
@@ -215,10 +282,14 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <div className="space-y-3">
                 {specialAbilities.map((ability, index: number) => (
                   <div key={index}>
-                    <div className="font-semibold">{ability.name}</div>
-                    <div className="text-muted-foreground">
-                      {ability.description}
+                    <div className="font-semibold text-foreground mb-2">
+                      {ability.name}
                     </div>
+                    <Textarea
+                      value={ability.description.replace(/<[^>]*>/g, '')}
+                      readOnly
+                      className="resize-none min-h-[60px] text-sm bg-card/50 border-border/50"
+                    />
                   </div>
                 ))}
               </div>
@@ -234,22 +305,45 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <div className="space-y-3">
                 {regularActions.map((action, index: number) => (
                   <div key={index}>
-                    <div className="flex items-center gap-2">
-                      <div className="font-semibold text-lg">{action.name}</div>
+                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                      <div className="font-semibold text-lg text-foreground">
+                        {action.name}
+                      </div>
                       {action.to_hit && (
-                        <Badge>
-                          <strong>Attack:</strong> {action.to_hit} to hit,
-                          <strong>Reach:</strong> {action.reach || "5 ft."} |{" "}
-                          <strong>Damage:</strong> {action.damage_dice}{" "}
-                          {action.damage_type}
-                          {action.extra_damage_dice &&
-                            ` + ${action.extra_damage_dice} ${action.extra_damage_type}`}
-                        </Badge>
+                        <>
+                          {formatNumber(action.to_hit)} to hit
+                          <span className="mx-1">•</span>
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: formatMovementText(
+                                action.reach || "5 ft."
+                              ),
+                            }} 
+                          /> reach
+                          {action.damage_dice && (
+                            <>
+                              <span className="mx-1">•</span>
+                              {formatDice(action.damage_dice)}
+                              <span className="ml-1">{action.damage_type}</span>
+                              {action.extra_damage_dice && (
+                                <>
+                                  <span className="mx-1">+</span>
+                                  {formatDice(action.extra_damage_dice)}
+                                  <span className="ml-1">
+                                    {action.extra_damage_type}
+                                  </span>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
                       )}
                     </div>
-                    <div className="text-muted-foreground">
-                      {action.description}
-                    </div>
+                    <Textarea
+                      value={action.description.replace(/<[^>]*>/g, '')}
+                      readOnly
+                      className="resize-none min-h-[60px] text-sm bg-card/50 border-border/50"
+                    />
                   </div>
                 ))}
               </div>
@@ -265,10 +359,14 @@ export function MonsterStatSheet({ monster }: MonsterStatSheetProps) {
               <div className="space-y-3">
                 {legendaryActions.map((action, index: number) => (
                   <div key={index}>
-                    <div className="font-semibold">{action.name}</div>
-                    <div className="text-muted-foreground">
-                      {action.description}
+                    <div className="font-semibold text-foreground mb-2">
+                      {action.name}
                     </div>
+                    <Textarea
+                      value={action.description.replace(/<[^>]*>/g, '')}
+                      readOnly
+                      className="resize-none min-h-[60px] text-sm bg-card/50 border-border/50"
+                    />
                   </div>
                 ))}
               </div>
