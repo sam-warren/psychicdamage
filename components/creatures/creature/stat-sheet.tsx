@@ -1,15 +1,13 @@
 import { Badge } from "@/components/ui/badge"
 import { Tables } from "@/types/database"
 import {
-  formatDice,
-  formatMovementText,
-  formatNumber,
   formatSkillsText,
   formatSensesText,
   formatDescription,
 } from "@/lib/utils/monster-formatting"
 import { Header } from "./components/header"
 import { InfoBlock } from "@/components/molecules/blocks/info-block"
+import { ActionBlock } from "@/components/molecules/blocks/action-block"
 
 type Creature = Tables<"monsters">
 
@@ -183,49 +181,7 @@ export function StatSheet({ creature }: StatSheetProps) {
             </h3>
             <div className="space-y-3">
               {regularActions.map((action, index: number) => (
-                <div key={index}>
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <div className="font-semibold text-lg text-foreground">
-                      {action.name}
-                    </div>
-                    {action.to_hit && (
-                      <>
-                        {formatNumber(action.to_hit)} to hit
-                        <span className="mx-1">•</span>
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: formatMovementText(action.reach || "5 ft."),
-                          }}
-                        />{" "}
-                        reach
-                        {action.damage_dice && (
-                          <>
-                            <span className="mx-1">•</span>
-                            {formatDice(action.damage_dice)}
-                            <span className="ml-1">{action.damage_type}</span>
-                            {action.extra_damage_dice && (
-                              <>
-                                <span className="mx-1">+</span>
-                                {formatDice(action.extra_damage_dice)}
-                                <span className="ml-1">
-                                  {action.extra_damage_type}
-                                </span>
-                              </>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
-                  <div className="bg-card/50 border border-border/50 rounded-md p-3">
-                    <span
-                      className="text-sm"
-                      dangerouslySetInnerHTML={{
-                        __html: formatDescription(action.description),
-                      }}
-                    />
-                  </div>
-                </div>
+                <ActionBlock key={index} action={action} />
               ))}
             </div>
           </div>
@@ -239,19 +195,7 @@ export function StatSheet({ creature }: StatSheetProps) {
             </h3>
             <div className="space-y-3">
               {legendaryActions.map((action, index: number) => (
-                <div key={index}>
-                  <div className="font-semibold text-foreground mb-2">
-                    {action.name}
-                  </div>
-                  <div className="bg-card/50 border border-border/50 rounded-md p-3">
-                    <span
-                      className="text-sm"
-                      dangerouslySetInnerHTML={{
-                        __html: formatDescription(action.description),
-                      }}
-                    />
-                  </div>
-                </div>
+                <ActionBlock key={index} action={action} />
               ))}
             </div>
           </div>

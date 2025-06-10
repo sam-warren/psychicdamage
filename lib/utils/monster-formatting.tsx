@@ -28,7 +28,7 @@ export const formatDCPattern = (text: string): string => {
 export const formatToHitPattern = (text: string): string => {
   return text.replace(
     /([+\-]\d+)\s+to\s+hit/gi,
-    '<span class="font-mono text-sm font-medium text-foreground bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">$1</span> to hit'
+    '<span class="font-mono text-sm font-medium text-foreground bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">$1  to hit</span>'
   )
 }
 
